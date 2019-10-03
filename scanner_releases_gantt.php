@@ -46,13 +46,14 @@
 	   
 	<?php
 					
-			if($_SESSION['submit']){
+			if(isset($_SESSION['submit'])){
 				$config_start_toggle  = $_SESSION['start_option'];
 				$config_start_date	  = $_SESSION['start_date'];
 				$config_end_date 	  = $_SESSION['end_date'];
 				$config_type 		  = $_SESSION['type_option'];
 				$config_status 		  = $_SESSION['status_option'];
-			}else{
+			}
+			else{
 				$config_start_toggle  = "open_date";
 				$config_start_date	  = "1970-01-01";
 				$config_end_date 	  = "2070-01-01";
