@@ -20,8 +20,7 @@ if (typeof jQuery !== 'undefined') {
  	<link rel="stylesheet" href="css/screen.css" media="screen" />
 	<link rel="stylesheet" href="css/jquery.treetable.css" />
 	<link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
-
-		
+	<script src="jquery-3.4.1.js"></script>
 		
 		<div class="right-content">
 			<div class="container">
@@ -101,7 +100,7 @@ if (typeof jQuery !== 'undefined') {
 	<thead>
 	<tr>
 	<?php 
-		echo "<th>Software</th>";
+		echo "<th>Product</th>";
 		// Set up the columns by name
 		foreach($columns as $key=>$value){
 			if($key < 4){
@@ -125,6 +124,12 @@ if (typeof jQuery !== 'undefined') {
 			echo '<tr data-tt-id="'.$parent.'">
 					<td>'.$key.'</td> 
 				  </tr>';
+			
+			/*
+			
+			Maybe make the child node data access recursive to get children of child nodes
+			
+			*/
 			
 			
 			//Array of child nodes
