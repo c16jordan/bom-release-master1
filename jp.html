@@ -15,6 +15,8 @@ $("#expand").click( function(){
 
 <table id="test">
 
+<?php
+
 <caption>Basic jQuery treetable Example</caption>
         <thead>
           <tr>
@@ -24,28 +26,29 @@ $("#expand").click( function(){
           </tr>
         </thead>
         <tbody>
-          <tr data-tt-id="1">
+          <tr data-tt-id=\"1\">
             <td>Node 1: Click on the icon in front of me to expand this branch.</td>
             <td>I live in the second column.</td>
 			<td>I live in the third column.</td>
           </tr>
-          <tr data-tt-id="1.1" data-tt-parent-id="1">
+          <tr data-tt-id=\"1.1\" data-tt-parent-id=\"1\">
             <td>Node 1.1: Look, I am a table row <em>and</em> I am part of a tree!</td>
             <td>Interesting.</td>
 			<td>I live in the third column.</td>
           </tr>
-          <tr data-tt-id="1.1.1" data-tt-parent-id="1.1">
+          <tr data-tt-id=\"1.1.1\" data-tt-parent-id=\"1.1\">
             <td>Node 1.1.1: I am part of the tree too!</td>
             <td>That's it!</td>
 			<td>I live in the third column.</td>
           </tr>
-          <tr data-tt-id="2">
+          <tr data-tt-id=\"2\">
             <td>Node 2: I am another root node, but without children</td>
             <td>Hurray!</td>
 			<td>I live in the third column.</td>
           </tr>
         </tbody>
-	  
+	 
+
 </table>
 
     <script src="jquery.treetable.js"></script>
