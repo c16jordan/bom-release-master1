@@ -3,9 +3,13 @@
   $left_buttons = "YES";
   $left_selected = "SBOMTREE";
 
-  include("./nav.php");
-  
+  include("./nav.php");   
  ?>
+ 
+    <link rel="stylesheet" href="css/screen.css" media="screen" />
+    <link rel="stylesheet" href="css/jquery.treetable.css" />
+    <link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
+	<script src="jquery-3.4.1.js"></script>
  
  <script>
  
@@ -17,10 +21,7 @@ if (typeof jQuery !== 'undefined') {
 */
 
  </script>
- 	<link rel="stylesheet" href="css/screen.css" media="screen" />
-	<link rel="stylesheet" href="css/jquery.treetable.css" />
-	<link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
-	<script src="jquery-3.4.1.js"></script>
+
 		
 		<div class="right-content">
 			<div class="container">
@@ -29,25 +30,7 @@ if (typeof jQuery !== 'undefined') {
 				
 				
 				
-	<div id="trees">
-	
-	<button id="expando" style="font-size: 10px">Expand</button>
-	<button id="reducto" style="font-size: 10px">Collapse</button>
-	
-	<script>
-		$(document).ready(function(){
-				$("#expando").click(function(){
-					$("#sbom_tree").treetable('expandAll');
-				});
-		});
-		
-		$(document).ready(function(){
-				$("#reducto").click(function(){
-					$("#sbom_tree").treetable('collapseAll');
-				});
-		});
-	</script>
-	
+
 	<?php 
 	
 	
@@ -73,11 +56,15 @@ if (typeof jQuery !== 'undefined') {
      $result->close();
      ?>
 
- 
+	 
  <!-- Fill table rows -->
- <div>
- 
+
  <table id="sbom_tree">
+	<caption>
+		<button id="expand" style="font-size: 10px">Expand</button>
+		<button id="collapse" style="font-size: 10px">Collapse</button>
+	</caption>
+	
 	<thead>
 	<tr>
 	<?php 
@@ -156,29 +143,38 @@ if (typeof jQuery !== 'undefined') {
 	?>	
 	</tbody>
 	
-		</table>	
+</table>	
+		
+		
+
 
 		<script src="jquery.treetable.js"></script>
+		
+		
+		<script>
+		$(document).ready(function(){
+				$("#expand").click(function(){
+					$('#sbom_tree').treetable('expandAll');
+					//alert("Expand");
+				});
+		});
+		
+		$(document).ready(function(){
+				$("#collapse").click(function(){
+					$('#sbom_tree').treetable('collapseAll');
+					//alert("Collapse");
+				});
+		});
+		</script>
+		
 		
 		<script>
 			$("#sbom_tree").treetable({ expandable: true });
 		</script>	
-			
-		</div>
-				
-
-	
-		
- </div>
-			
 
 			
 	</div>
 </div>
-<p id="test">
-<?php
-?>
-</p>
 
 
-<?php include("./footer.php"); ?>
+<?php //include("./footer.php"); ?>
