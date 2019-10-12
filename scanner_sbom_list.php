@@ -26,7 +26,7 @@
             width="100%" style="width: 100px;">
               <thead>
                 <tr id="table-first-row">
-                        <th>BOM ID</th>
+                        <th>App Id</th>
                         <th>App Name</th>
                         <th>App Version</th>
                         <th>Cmp Id</th>
@@ -41,7 +41,7 @@
 
               <tfoot>
                 <tr>
-                        <th>BOM ID</th>
+                        <th>App Id</th>
                         <th>App Name</th>
                         <th>App Version</th>
                         <th>Cmp Id</th>
