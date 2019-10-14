@@ -135,10 +135,10 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		
 		
 		function selectHandler() {
-		var selectedItem = chart1.getSelection()[0];
+			var selectedItem = chart1.getSelection()[0];
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				alert('The user selected ' + value);
+				drawTable('app_status' ,value);
 			}
 		}
 
@@ -188,7 +188,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			var selectedItem = chart2.getSelection()[0];
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				alert('The user selected ' + value);
+				drawTable('cmp_status' ,value);
 			}
 		}
 
@@ -232,7 +232,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			var selectedItem = chart3.getSelection()[0];
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				alert('The user selected ' + value);
+				drawTable('request_status' ,value);
 			}
 		}
 
@@ -278,7 +278,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			var selectedItem = chart4.getSelection()[0];
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				drawTable(value);
+				drawTable('request_step' ,value);
 				
 			}
 		}
@@ -293,8 +293,21 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
 	<script>
 	
-	function drawTable(object){
-		alert("Drawing the table for "+object);
+	function drawTable(object, category){
+		//alert("Drawing the table for "+object);
+		var query_params = object + '/' + category;
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+		
+		if (this.readyState == 4 && this.status == 200) {
+			//var myObj = JSON.parse(this.responseText);
+			document.getElementById("slice_table").innerHTML = this.responseText;
+			}
+		};
+		xmlhttp.open("POST", "db_pichart.php", true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.send(query_params); 
 	}
 	
 	</script>
@@ -319,8 +332,6 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 	</table>
 
 	<div id="slice_table"></div>
-	
-	
 	<p id="test"> <?php
 	/*
 		echo $cmp_stats[0];
