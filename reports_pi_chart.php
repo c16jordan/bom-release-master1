@@ -55,9 +55,9 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='submitted';";
 			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='in_review';";
 			
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='Submitted';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='Approved';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='Pending';";
+			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='submitted';";
+			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='approved';";
+			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='pending';";
 			
 			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Review Step';";
 			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Approval Step';";
@@ -134,12 +134,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
         var chart1 = new google.visualization.PieChart(document.getElementById('piechart1'));
 		
 		
-		function selectHandler() {
+			function selectHandler() {
 			var selectedItem = chart1.getSelection()[0];
+			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				drawTable('app_status' ,value);
+				
+				value = prepareParam(value);
+				drawTable('request_status' ,value);
 			}
+			
 		}
 
 		// Listen for the 'select' event, and call my function selectHandler() when
@@ -186,10 +190,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
 		function selectHandler() {
 			var selectedItem = chart2.getSelection()[0];
+			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				
+				value = prepareParam(value);
 				drawTable('cmp_status' ,value);
 			}
+			
 		}
 
 		// Listen for the 'select' event, and call my function selectHandler() when
@@ -230,10 +238,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		
 		function selectHandler() {
 			var selectedItem = chart3.getSelection()[0];
+			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				drawTable('request_status' ,value);
+				
+				value = prepareParam(value);
+				drawTable('report_status' ,value);
 			}
+	
 		}
 
 		// Listen for the 'select' event, and call my function selectHandler() when
@@ -254,17 +266,17 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		  
 		<?php 
 		
-			$rq_submitted = $req_steps[0];
-			$rq_approved = $req_steps[1];
-			$rq_pending = $req_steps[2];
+			$rq_review = $req_steps[0];
+			$rq_approval = $req_steps[1];
+			$rq_inspection = $req_steps[2];
 		
 		?>
 	  
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],
-          ['Submitted', <?php echo $rq_submitted;?>],
-          ['Approved', <?php echo $rq_approved;?>],
-          ['Pending', <?php echo $rq_pending;?>]
+          ['Review Step', <?php echo $rq_review;?>],
+          ['Approval Step', <?php echo $rq_approval;?>],
+          ['Inspection Step', <?php echo $rq_inspection;?>]
         ]);
 
         var options = {
@@ -276,11 +288,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		
 		function selectHandler() {
 			var selectedItem = chart4.getSelection()[0];
+			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				drawTable('request_step' ,value);
 				
+				value = prepareParam(value);
+				drawTable('request_step' ,value);
 			}
+	
 		}
 
 		// Listen for the 'select' event, and call my function selectHandler() when
@@ -308,6 +323,18 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		xmlhttp.open("POST", "db_pichart.php", true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xmlhttp.send(query_params); 
+	}
+	
+	// Convert slice names into database names 
+	function prepareParam(param){
+		
+		param = param.toLowerCase();
+		
+		if(param.includes(" ")){
+			param = param.replace(/\s/g, "_");
+		}
+						
+		return param;	
 	}
 	
 	</script>
