@@ -131,9 +131,24 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
           title: 'Application Report'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
+        var chart1 = new google.visualization.PieChart(document.getElementById('piechart1'));
+		
+		
+		function selectHandler() {
+		var selectedItem = chart1.getSelection()[0];
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				alert('The user selected ' + value);
+			}
+		}
 
-        chart.draw(data, options);
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart1, 'select', selectHandler);
+
+		
+		
+        chart1.draw(data, options);
       }
     </script>
 	
@@ -167,9 +182,21 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
           title: 'Component Report'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart2'));
+        var chart2 = new google.visualization.PieChart(document.getElementById('piechart2'));
 
-        chart.draw(data, options);
+		function selectHandler() {
+			var selectedItem = chart2.getSelection()[0];
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				alert('The user selected ' + value);
+			}
+		}
+
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart2, 'select', selectHandler);
+
+        chart2.draw(data, options);
       }
     </script>
 	
@@ -199,9 +226,21 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
           title: 'Request Report'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart3'));
+        var chart3 = new google.visualization.PieChart(document.getElementById('piechart3'));
+		
+		function selectHandler() {
+			var selectedItem = chart3.getSelection()[0];
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				alert('The user selected ' + value);
+			}
+		}
 
-        chart.draw(data, options);
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart3, 'select', selectHandler);
+		
+        chart3.draw(data, options);
       }
     </script>
 
@@ -232,11 +271,34 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
           title: 'Request Step Report'
         };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart4'));
+        var chart4 = new google.visualization.PieChart(document.getElementById('piechart4'));
 
-        chart.draw(data, options);
+		
+		function selectHandler() {
+			var selectedItem = chart4.getSelection()[0];
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				drawTable(value);
+				
+			}
+		}
+
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart4, 'select', selectHandler);
+
+        chart4.draw(data, options);
       }
     </script>
+
+	<script>
+	
+	function drawTable(object){
+		alert("Drawing the table for "+object);
+	}
+	
+	</script>
+	
 
   </head>
   
@@ -256,7 +318,9 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 	
 	</table>
 
-
+	<div id="slice_table"></div>
+	
+	
 	<p id="test"> <?php
 	/*
 		echo $cmp_stats[0];
