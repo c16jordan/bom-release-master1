@@ -145,13 +145,22 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
       function drawChart() {
 
+	  <?php
+		$c_released   = $cmp_stats[0];
+		$c_approved   = $cmp_stats[1];
+		$c_pending    = $cmp_stats[2];
+		$c_submitted  = $cmp_stats[3];
+		$c_in_review  = $cmp_stats[4];
+	   ?>  
+	   
         var data = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Eat',      2],
-          ['Commute',  2],
-          ['Watch TV', 2],
-          ['Sleep',    7]
+          ['Task', 'Percent'],
+          ['Released', <?php echo $c_released;?>],
+          ['Approved', <?php echo $c_approved;?>],
+          ['Pending', <?php echo $c_pending;?>],
+          ['Submitted', <?php echo $c_submitted;?>],
+          ['In Review', <?php echo $c_in_review;?>]
+		  
         ]);
 
         var options = {
@@ -171,13 +180,19 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
       function drawChart() {
 
+	  <?php
+
+			$r_submitted = $req_stats[0];
+			$r_approved = $req_stats[1];
+			$r_pending = $req_stats[2];
+	  
+	  ?>
+	  
         var data = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Eat',      2],
-          ['Commute',  2],
-          ['Watch TV', 2],
-          ['Sleep',    7]
+          ['Task', 'Percent per category'],
+          ['Submitted', <?php echo $r_submitted;?>],
+          ['Approved', <?php echo $r_approved;?>],
+          ['Pending', <?php echo $r_pending;?>]
         ]);
 
         var options = {
@@ -197,14 +212,20 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
+		  
+		<?php 
+		
+			$rq_submitted = $req_steps[0];
+			$rq_approved = $req_steps[1];
+			$rq_pending = $req_steps[2];
+		
+		?>
+	  
         var data = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Work',     11],
-          ['Eat',      2],
-          ['Commute',  2],
-          ['Watch TV', 2],
-          ['Sleep',    7]
+          ['Task', 'Percent'],
+          ['Submitted', <?php echo $rq_submitted;?>],
+          ['Approved', <?php echo $rq_approved;?>],
+          ['Pending', <?php echo $rq_pending;?>]
         ]);
 
         var options = {
@@ -237,6 +258,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
 
 	<p id="test"> <?php
+	/*
+		echo $cmp_stats[0];
+		echo $cmp_stats[1];
+		echo $cmp_stats[2];
+		echo $cmp_stats[3];
+		echo $cmp_stats[4];
+	
+	
 					echo "<pre>";
 					echo $released."<br />";
 					echo $in_prog."<br />";
@@ -246,6 +275,8 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 					//print_r($req_stats); echo "<br />";
 					//print_r($req_steps); 
 					echo "</pre>";
+					
+	*/
 				  ?>
 	</p>
 	
