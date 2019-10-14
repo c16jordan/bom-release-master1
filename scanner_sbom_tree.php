@@ -11,17 +11,6 @@
     <link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
 	<script src="jquery-3.4.1.js"></script>
  
- <script>
- 
-/*
-if (typeof jQuery !== 'undefined') {  
-    // jQuery is loaded => print the version
-    alert(jQuery.fn.jquery);
-}
-*/
-
- </script>
-
 		
 		<div class="right-content">
 			<div class="container">
@@ -34,25 +23,37 @@ if (typeof jQuery !== 'undefined') {
 	<?php 
 	
 	
-	$sql = "SELECT app_name, app_version, app_status, cmp_name, cmp_version, cmp_type, cmp_status, notes 
+	$sql = "SELECT app_name, app_version, app_status, 
+				   cmp_name, cmp_version, cmp_type, cmp_status,
+				   request_id, request_date, request_status, request_step,
+				   notes 
 			FROM sbom";
+			
 	$result = $db->query($sql);
-	$bom_ary;	// Array to store Application info and that of its components
+	
+	
+	$bom_ary;	// Associative array to store Application info and that of its components
 	$key;
-                if ($result->num_rows > 0) {
+    
+
+		if ($result->num_rows > 0) {
                    
-                    while($row = $result->fetch_assoc()) {
-						
-						$key = $row["app_name"]." ".$row["app_version"];
-						$value = $row["app_status"]."-".$row["cmp_name"]." ".$row["cmp_version"]
-					        ."-".$row["cmp_type"]."-".$row["cmp_status"]."-".$row["notes"];
+			while($row = $result->fetch_assoc()) {
+				
+			// Store relevant components by Application (name+id)
+			$key = $row["app_name"]." ".$row["app_version"];
+			$value = $row["app_status"]
+				."@".$row["cmp_name"]." ".$row["cmp_version"]."@".$row["cmp_type"]."@".$row["cmp_status"]
+				."@".$row["request_id"]."@".$row["request_date"]."@".$row["request_status"]."@".$row["request_step"]
+				."@".$row["notes"];
 								 
-						$bom_ary[$key][] = explode("-", $value);
-                    }
-                }
-                else {
-                    echo "0 results";
-                }
+				$bom_ary[$key][] = explode("@", $value);
+            }
+         }
+         else {
+            echo "0 results";
+         }
+		 
      $result->close();
      ?>
 
@@ -74,6 +75,10 @@ if (typeof jQuery !== 'undefined') {
 		echo "<th>Application Status</th>";
 		echo "<th>Component Type</th>";
 		echo "<th>Component Status</th>";
+		echo "<th>Request Id</th>";
+		echo "<th>Request Date</th>";
+		echo "<th>Request Status</th>";
+		echo "<th>Request Step</th>";
 		echo "<th>Notes</th>";
 	?>
 	</tr>
@@ -107,6 +112,7 @@ if (typeof jQuery !== 'undefined') {
 				
 				if($index == 0){
 				
+					// Complete root node
 					if($add_status === 1){
 						echo '<td>'.$child_data[0].'</td>';
 						echo '</tr>';	// Closing tr tag for root note data
@@ -121,6 +127,7 @@ if (typeof jQuery !== 'undefined') {
 				}
 				
 				
+				// Begin component node row
 				if($index == 1){
 					echo '<tr data-tt-id="'.$parent_id.".".($child_index+1).'" tr data-tt-parent-id="'.$parent_id.'">';
 					echo '<td>'.$child_data[$index].'</td>';
@@ -128,10 +135,11 @@ if (typeof jQuery !== 'undefined') {
 					continue;
 				}
 				
-				//WORKS
+				// Fill in component data
 				echo '<td>'.$child_data[$index].'</td>';
 			}
 			
+			// Close component node row
 			echo '</tr>';
 			$child_index++;
 		}
