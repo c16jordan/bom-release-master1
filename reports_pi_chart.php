@@ -59,9 +59,9 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='approved';";
 			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='pending';";
 			
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Review Step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Approval Step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Inspection Step';";
+			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='review_step';";
+			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='approval_step';";
+			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='inspection_step';";
 			
 			
 			$result = $db->query($sql);
@@ -141,7 +141,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 				var value = data.getValue(selectedItem.row, 0);
 				
 				value = prepareParam(value);
-				drawTable('request_status' ,value);
+				drawTable('app_status' ,value);
 			}
 			
 		}
@@ -243,7 +243,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 				var value = data.getValue(selectedItem.row, 0);
 				
 				value = prepareParam(value);
-				drawTable('report_status' ,value);
+				drawTable('request_status' ,value);
 			}
 	
 		}
@@ -316,8 +316,42 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		xmlhttp.onreadystatechange = function() {
 		
 		if (this.readyState == 4 && this.status == 200) {
-			//var myObj = JSON.parse(this.responseText);
-			document.getElementById("slice_table").innerHTML = this.responseText;
+			
+			var myObj = JSON.parse(this.responseText);
+			var table = "";
+			
+			
+			table += '<table id="info" cellpadding="0" cellspacing="0" border="0"'
+				  +  'class="datatable table table-striped table-bordered datatable-style table-hover"'
+				  +  'width="100%" style="width: 100px;">';
+			
+			
+			table += "<th>App Id</th> <th>App Name</th> <th>App Version</th>"
+				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
+                  +  "<th>App Status</th> <th>Cmp Status</th>"
+				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
+                  +  "<th>Notes</th>";
+			
+			for(var index = 0; index < myObj.length; index++){
+					
+					table += "<tr>";
+					for(var inner_index = 0; inner_index < myObj[index].length; inner_index++){
+						
+						if(myObj[index][inner_index] == "empty"){
+							table += "<td></td>";
+						}
+						else{
+							table += "<td>" + myObj[index][inner_index] + "</td>";
+						}
+						
+				   }
+				   table += "</tr>";
+				   
+			}
+			table += "</table>";
+			
+			document.getElementById("slice_table").innerHTML = table;
+			
 			}
 		};
 		xmlhttp.open("POST", "db_pichart.php", true);
@@ -383,7 +417,17 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 	</p>
 	
   </body>
-</html>
+
+       
+
+ <style>
+   tfoot {
+     display: table-header-group;
+   }
+ </style>
+ 
+  
+ </html>
 
 
 	  

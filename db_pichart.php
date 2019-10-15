@@ -23,35 +23,50 @@
 	}
 
 			$params = explode("/",$json_string);
-
-			echo $params[0];
-			echo $params[1];
+			$sql = "SELECT * FROM sbom WHERE ".$params[0]."='".$params[1]."';";
 			
-			$sql = "SELECT * FROM sbom WHERE ".$params[0]."=".$params[1]." ;";
+			$output = [];
 			
+			//echo "SQL query: ".$sql,"<br />";
 			if($result = $db->query($sql)){
 			
             if ($result->num_rows > 0) {
                    // output data of each row
                 while($row = $result->fetch_assoc()) {
 				
-	
-					
+				$output_str = $row['app_id']."@".$row['app_name']."@".$row['app_version']."@".$row['cmp_id']."@".$row['cmp_name']."@".$row['cmp_version']."@".$row['cmp_type']
+						."@".$row['app_status']."@".$row['cmp_status']."@".$row['request_id']."@".$row['request_date']."@".$row['request_status']."@".$row['request_step'];
+				if($row['notes'] ==	""){
+					$output_str .= "@empty";
+				}	
+				else{
+					$output_str .= "@".$row['notes'];
+				}
 				
+				$output[] = explode('@',$output_str);
+				/*	
+					echo $row['app_id'];
+					echo $row['app_name'];
+					echo $row['app_version'];
+					echo $row['cmp_id'];
+					echo $row['cmp_name'];
+					echo $row['cmp_version'];
+					echo $row['cmp_type'];
+					echo $row['app_status'];
+					echo $row['cmp_status'];
+					echo $row['request_id'];
+					echo $row['request_date'];
+					echo $row['request_status'];
+					echo $row['request_step'];
+					echo $row['notes'];
+					echo "<br />";
+				*/
                 }//end while
              }//end if
 			  $result->close();
 			}
                 
-
-	// now we'll build the JSON output object that we will send back to JavaScript
-	// create a new order_number property and assign a random integer to it
-	//$json_output_object->order_number = random_int(500, 1000);
-
-
-	// encode the PHP JSON object into a JSON string and send it to the browser to be handled by JavaScript
-	//echo json_encode($json_output_object);
-	//echo $json_string;
-	//echo "Rats";
+	
+	echo json_encode($output);
 	
 ?>
