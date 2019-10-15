@@ -44,23 +44,7 @@
 				}
 				
 				$output[] = explode('@',$output_str);
-				/*	
-					echo $row['app_id'];
-					echo $row['app_name'];
-					echo $row['app_version'];
-					echo $row['cmp_id'];
-					echo $row['cmp_name'];
-					echo $row['cmp_version'];
-					echo $row['cmp_type'];
-					echo $row['app_status'];
-					echo $row['cmp_status'];
-					echo $row['request_id'];
-					echo $row['request_date'];
-					echo $row['request_status'];
-					echo $row['request_step'];
-					echo $row['notes'];
-					echo "<br />";
-				*/
+			
                 }//end while
              }//end if
 			  $result->close();

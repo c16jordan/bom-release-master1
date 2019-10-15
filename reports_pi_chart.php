@@ -326,12 +326,19 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 				  +  'width="100%" style="width: 100px;">';
 			
 			
-			table += "<th>App Id</th> <th>App Name</th> <th>App Version</th>"
+			table += "<thead><tr id=\"table-first-row\"><th>App Id</th> <th>App Name</th> <th>App Version</th>"
 				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
                   +  "<th>App Status</th> <th>Cmp Status</th>"
 				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
-                  +  "<th>Notes</th>";
+                  +  "<th>Notes</th> </tr></thead>";
 			
+			table += "<tfoot><tr><th>App Id</th> <th>App Name</th> <th>App Version</th>"
+				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
+                  +  "<th>App Status</th> <th>Cmp Status</th>"
+				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
+                  +  "<th>Notes</th> </tr></tfoot>";
+
+			table += "<tbody>";
 			for(var index = 0; index < myObj.length; index++){
 					
 					table += "<tr>";
@@ -348,6 +355,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 				   table += "</tr>";
 				   
 			}
+			table += "</tbody>";
 			table += "</table>";
 			
 			document.getElementById("slice_table").innerHTML = table;
@@ -372,8 +380,8 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 	}
 	
 	</script>
+		
 	
-
   </head>
   
   <body>
@@ -393,28 +401,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 	</table>
 
 	<div id="slice_table"></div>
-	<p id="test"> <?php
-	/*
-		echo $cmp_stats[0];
-		echo $cmp_stats[1];
-		echo $cmp_stats[2];
-		echo $cmp_stats[3];
-		echo $cmp_stats[4];
-	
-	
-					echo "<pre>";
-					echo $released."<br />";
-					echo $in_prog."<br />";
-					echo $cancelled."<br />";
-					//print_r($app_stats); echo "<br />"; 
-					//print_r($cmp_stats); echo "<br />";
-					//print_r($req_stats); echo "<br />";
-					//print_r($req_steps); 
-					echo "</pre>";
-					
-	*/
-				  ?>
-	</p>
+
 	
   </body>
 
@@ -429,8 +416,7 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
   
  </html>
 
-
-	  
-	  
 	</div>
 </div>
+
+  <?php include("./footer.php"); ?>
