@@ -23,7 +23,10 @@
 	}
 
 			$params = explode("/",$json_string);
-			$sql = "SELECT * FROM sbom WHERE ".$params[0]."='".$params[1]."';";
+			$sql = "SELECT * 
+					FROM sbom 
+					WHERE ".$params[0]."='".$params[1]."'
+					ORDER BY app_id ASC;";
 			
 			$output = [];
 			
