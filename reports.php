@@ -1,12 +1,12 @@
 <?php
   $nav_selected = "REPORTS";
-  $left_buttons = "NO";
+  $left_buttons = "YES";
   $left_selected = "";
 
   include("./nav.php");
   
  ?>
-
+ 
  <div class="right-content">
     <div class="container">
 

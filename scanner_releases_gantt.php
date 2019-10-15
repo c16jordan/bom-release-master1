@@ -1,18 +1,14 @@
 <?php
-
   $nav_selected = "SCANNER"; 
   $left_buttons = "YES"; 
   $left_selected = "RELEASESGANTT"; 
-
   include("./nav.php");
   global $db;
  
   $con = mysqli_connect("localhost", "root", ""); 
   mysqli_select_db($con, "bom");
   
-
   
-
 ?>
 <div class="right-content">
     <div class="container">
@@ -25,13 +21,10 @@
   <script type="text/javascript">
     google.charts.load('current', {'packages':['gantt']});
     google.charts.setOnLoadCallback(drawChart);
-
     function daysToMilliseconds(days) {
       return days * 24 * 60 * 60 * 1000;
     }
-
     function drawChart() {
-
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Task ID');
       data.addColumn('string', 'Task Name');
@@ -41,7 +34,6 @@
       data.addColumn('number', 'Duration');
       data.addColumn('number', 'Percent Complete');
       data.addColumn('string', 'Dependencies');
-
       data.addRows([
 	   
 	<?php
@@ -82,21 +74,27 @@
 	 
 	 // Produce output from releases databases with prepared query from above
   	   $exec = mysqli_query($con,$query);
-	    while($row = mysqli_fetch_array($exec)){
+	   
+	   if(mysqli_num_rows($exec) == 0){
+		   echo "['N/A','No results',null,new Date(0000,00,00),new Date(0000,00,00),null,0,null],";
+	   }
+	   else{
+			while($row = mysqli_fetch_array($exec)){
 		  
-		  $id = $row['id'];
-		  $name = $row['name'];
+				$id = $row['id'];
+				$name = $row['name'];
 		
-		  $start_date = str_replace("-", ",",$row[$config_start_toggle]);
+				$start_date = str_replace("-", ",",$row[$config_start_toggle]);
 		  
 		  
-		  $rtm_date = str_replace("-", ",",$row['rtm_date']);
-		  $type = $row['type'];
+				$rtm_date = str_replace("-", ",",$row['rtm_date']);
+				$type = $row['type'];
 		  
-		  echo "['".$id."','".$name."','".$id."',new Date(".$start_date."),new Date(".$rtm_date."),null,50,null],";
-		}	?>
+				echo "['".$id."','".$name."','".$id."',new Date(".$start_date."),new Date(".$rtm_date."),null,50,null],";
+			}
+	   }
+	   ?>
       ]);
-
       var options = {
 		width: 2000,
 		height: data.getNumberOfRows() * 55,
@@ -105,9 +103,7 @@
 			labelMaxWidth: 600
 		}
       };
-
       var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-
       chart.draw(data, options);
     }
   </script>

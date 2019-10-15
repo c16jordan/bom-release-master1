@@ -2,10 +2,8 @@
   $nav_selected = "SETUP";
   $left_buttons = "NO";
   $left_selected = "";
-
   include("./nav.php");
   global $db;
-
   /*http://form.guide/php-form/php-form-action-self.html
   <?php echo htmlentities($_SERVER['PHP_SELF']);?>*/
  ?>
@@ -69,7 +67,6 @@
 
 <?php
 	// Store form values in $_SESSION variables on submission
-
 			if(isset($_POST['submit'])){
 				$_SESSION['submit']		   = $_POST['submit'];
 				$_SESSION['start_option']  = $_POST['start_option'];
@@ -78,7 +75,6 @@
 				$_SESSION['type_option']   = $_POST['type_option'];
 				$_SESSION['status_option'] = $_POST['status_option'];
 			}
-
 ?>
 
 <script>
@@ -105,9 +101,7 @@
 		}
 	
 }
-
 // Function to convert open_date/dependency_date into better looking strings for the form input id="start_opt"
-
 		function switch_param(input){
 	
 			var vahr = input;
@@ -118,7 +112,6 @@
 			else if(vahr == "open_date"){
 				vahr = "Open Date";
 			}
-
 			return vahr;
 		}
 	

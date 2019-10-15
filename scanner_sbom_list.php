@@ -26,33 +26,39 @@
             width="100%" style="width: 100px;">
               <thead>
                 <tr id="table-first-row">
-                        <th>id</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Open Date</th>
-                        <th>Dependency Date</th>
-                        <th>Content Date</th>
-                        <th>RTM Date(s)</th>
-                        <th>Manager</th>
-                        <th>Author</th>
-                        <th>BOM ID</th>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
                 </tr>
               </thead>
 
               <tfoot>
                 <tr>
-                        <th>Name</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Open Date</th>
-                        <th>Dependency Date</th>
-                        <th>Content Date</th>
-                        <th>RTM Date(s)</th>
-                        <th>Manager</th>
-                        <th>Author</th>
-                        <th>BOM ID</th>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
                 </tr>
               </tfoot>
 
@@ -60,24 +66,27 @@
 
               <?php
 
-$sql = "SELECT * from releases ORDER BY rtm_date ASC;";
+$sql = "SELECT * from sbom ORDER BY app_id ASC;";
 $result = $db->query($sql);
 
                 if ($result->num_rows > 0) {
                     // output data of each row
                     while($row = $result->fetch_assoc()) {
                         echo '<tr>
-                                <td>'.$row["id"].'</td>
-                                <td>'.$row["name"].' </span> </td>
-                                <td>'.$row["type"].'</td>
-                                <td>'.$row["status"].'</td>
-                                <td>'.$row["open_date"].' </span> </td>
-                                <td>'.$row["dependency_date"].'</td>
-                                <td>'.$row["freeze_date"].'</td>
-                                <td>'.$row["rtm_date"].' </span> </td>
-                                <td>'.$row["manager"].' </span> </td>
-                                <td>'.$row["author"].' </span> </td>
-                                <td>'.$row["app_id"].' </span> </td>
+                                <td>'.$row["app_id"].'</td>
+                                <td>'.$row["app_name"].' </span> </td>
+                                <td>'.$row["app_version"].'</td>
+                                <td>'.$row["cmp_id"].'</td>
+                                <td>'.$row["cmp_name"].' </span> </td>
+                                <td>'.$row["cmp_version"].'</td>
+                                <td>'.$row["cmp_type"].'</td>
+                                <td>'.$row["app_status"].' </span> </td>
+                                <td>'.$row["cmp_status"].' </span> </td>
+								<td>'.$row["request_id"].' </span> </td>
+								<td>'.$row["request_date"].' </span> </td>
+								<td>'.$row["request_status"].' </span> </td>
+								<td>'.$row["request_step"].' </span> </td>
+                                <td>'.$row["notes"].' </span> </td>
                             </tr>';
                     }//end while
                 }//end if
