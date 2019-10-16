@@ -76,7 +76,7 @@
 	<caption>
 		<button id="expand" style="font-size: 10px">Expand</button>
 		<button id="collapse" style="font-size: 10px">Collapse</button>
-		<button id="colorize" style="font-size: 10px">Colorize</button>
+		<button id="colorize" style="font-size: 10px">Color</button>
 	</caption>
 	
 	<thead>
@@ -217,6 +217,8 @@
 						color(child_nodes, "#ffff4d");
 						color(leaf_nodes, "#009900");
 						
+						document.getElementById("colorize").innerHTML = "No color";		
+						
 						flag = 1;
 					}
 					else if(flag == 1){
@@ -225,6 +227,7 @@
 						color(child_nodes, "#f9f9f9");
 						color(leaf_nodes, "white");
 						
+						document.getElementById("colorize").innerHTML = "Color";		
 						flag = 0;
 					}
 					
