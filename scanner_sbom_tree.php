@@ -5,6 +5,7 @@
 
   include("./nav.php");   
  ?>
+
  
     <link rel="stylesheet" href="css/screen.css" media="screen" />
     <link rel="stylesheet" href="css/jquery.treetable.css" />
@@ -18,7 +19,12 @@
 	
 				<h3 style = "color: #01B0F1;">Scanner --> BOM Tree</h3>
 				
-				
+	<script>
+		var flag = 0;
+		var rootOrigColor;
+		var childOrigColor;
+		var leafOrigColor;
+	</script>	
 
 	<?php 
 	
@@ -128,7 +134,7 @@
 		
 		//<tr data-tt-id="x">
 		function base($base, $parent_id){
-			echo '<tr id="root" data-tt-id="'.$parent_id.'" id="base">';
+			echo '<tr class="root" data-tt-id="'.$parent_id.'" id="base">';
 			echo '<td id="'.$base.'">'.$base.'</td>';
 			
 			for($index=0; $index < 8; $index++){
@@ -138,8 +144,9 @@
 			echo "</tr>";
 		}
 
+		//<tr data-tt-id="x.x">
 		function root($root, $parent_id, $root_id){
-			echo '<tr id="child" data-tt-id="'.$parent_id.'.'.$root_id.'" data-tt-parent-id="'.$parent_id.'">';
+			echo '<tr class="child" data-tt-id="'.$parent_id.'.'.$root_id.'" data-tt-parent-id="'.$parent_id.'">';
 				$root = explode("@",$root);
 				echo '<td id="'.$root[0].'">'.$root[0].'</td>';
 				echo '<td id="'.$root[1].'">'.$root[1].'</td>';
@@ -150,8 +157,9 @@
 			echo '</tr>';
 		}
 
+		//<tr data-tt-id="x.x.x">
 		function child($child, $child_ary, $parent_id, $child_id){
-			echo '<tr id="leaf" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
+			echo '<tr class="leaf" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
 				echo '<td id="'.$child.'">'.$child.'</td>';	
 				
 				foreach($child_ary as $leaf=>$data)
@@ -194,13 +202,56 @@
 				});
 		});
 		
+	
+		
 		$(document).ready(function(){
-				$("#colorize").click(function(){
-					var classe = $('#root').css("background-color");
+				$("#colorize").click(function(){			
+					
+					var root_nodes = document.getElementsByClassName("root");
+					var child_nodes = document.getElementsByClassName("child");
+					var leaf_nodes = document.getElementsByClassName("leaf");
+					
+					if(flag == 0){	
+							
+						color(root_nodes, "#e60000");
+						color(child_nodes, "#ffff4d");
+						color(leaf_nodes, "#009900");
+						
+						flag = 1;
+					}
+					else if(flag == 1){
+						
+						color(root_nodes, "#f9f9f9");
+						color(child_nodes, "#f9f9f9");
+						color(leaf_nodes, "white");
+						
+						flag = 0;
+					}
+					
 					
 				});
 		});
 		
+		</script>
+		
+		<script>
+			function storeColors(rootObjs, childObjs ,leafObjs){
+				rootOrigColor = rootObjs[1].style.backgroundColor;
+				//childOrigColor = childObjs[0].style.backgroundColor;
+				//leafOrigColor = leafObjs[0].style.backgroundColor;
+				
+				document.getElementById("test").innerHTML = rootObjs;
+			}
+		
+		
+			function color(objects, color){
+				
+				for(var index=0; index < objects.length ;index++){
+						objects[index].style.backgroundColor = color;
+				}
+				
+			}
+			
 		</script>
 		
 		
