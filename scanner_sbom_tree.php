@@ -74,8 +74,8 @@
 
  <table id="sbom_tree">
 	<caption>
-		<button id="expand" style="font-size: 10px">Expand</button>
-		<button id="collapse" style="font-size: 10px">Collapse</button>
+		<button id="expand" style="font-size: 10px">Expand All</button>
+		<button id="collapse" style="font-size: 10px">Collapse All</button>
 		<button id="colorize" style="font-size: 10px">Color</button>
 	</caption>
 	
@@ -134,8 +134,8 @@
 		
 		//<tr data-tt-id="x">
 		function base($base, $parent_id){
-			echo '<tr class="root" data-tt-id="'.$parent_id.'" id="base">';
-			echo '<td id="'.$base.'">'.$base.'</td>';
+			echo '<tr class="root '.$base.'" data-tt-id="'.$parent_id.'">';
+			echo '<td>'.$base.'</td>';
 			
 			for($index=0; $index < 8; $index++){
 					echo '<td></td>';
@@ -146,10 +146,11 @@
 
 		//<tr data-tt-id="x.x">
 		function root($root, $parent_id, $root_id){
-			echo '<tr class="child" data-tt-id="'.$parent_id.'.'.$root_id.'" data-tt-parent-id="'.$parent_id.'">';
-				$root = explode("@",$root);
-				echo '<td id="'.$root[0].'">'.$root[0].'</td>';
-				echo '<td id="'.$root[1].'">'.$root[1].'</td>';
+		    $root = explode("@",$root);
+			echo '<tr class="child '.$root[0].'" data-tt-id="'.$parent_id.'.'.$root_id.'" data-tt-parent-id="'.$parent_id.'">';
+				
+				echo '<td>'.$root[0].'</td>';
+				echo '<td>'.$root[1].'</td>';
 				
 				for($index=0; $index < 7; $index++){
 					echo '<td></td>';
@@ -159,8 +160,8 @@
 
 		//<tr data-tt-id="x.x.x">
 		function child($child, $child_ary, $parent_id, $child_id){
-			echo '<tr class="leaf" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
-				echo '<td id="'.$child.'">'.$child.'</td>';	
+			echo '<tr class="leaf '.$child.'" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
+				echo '<td>'.$child.'</td>';	
 				
 				foreach($child_ary as $leaf=>$data)
 					leaf($data);
@@ -238,15 +239,7 @@
 		</script>
 		
 		<script>
-			function storeColors(rootObjs, childObjs ,leafObjs){
-				rootOrigColor = rootObjs[1].style.backgroundColor;
-				//childOrigColor = childObjs[0].style.backgroundColor;
-				//leafOrigColor = leafObjs[0].style.backgroundColor;
-				
-				document.getElementById("test").innerHTML = rootObjs;
-			}
-		
-		
+					
 			function color(objects, color){
 				
 				for(var index=0; index < objects.length ;index++){
