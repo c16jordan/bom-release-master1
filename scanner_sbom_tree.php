@@ -68,16 +68,87 @@
 		 
      $result->close();
      ?>
+<!-- https://www.w3schools.com/howto/howto_js_autocomplete.asp -->
+<style>
 
-	 
+#where{
+	margin-right: 5px;
+}
+
+
+.autocomplete{
+	width:150px; 
+	display:inline-block;
+	position:absolute;
+}
+
+.autocomplete-list{
+	width:200px;
+	position: absolute;
+	top:100%;
+	left:0;
+	right:0;
+	z-index:99;
+	background-color: #fff;
+}
+
+.autocomplete-items{
+	border-top: none;
+	border-left: 2px solid #f9f9f9;
+	border-bottom: none;
+	background-color: #f9f9f9;
+
+}
+
+</style>
+
+
+<script>
+	var result_container;
+
+	$(document).ready(function(){
+			$('#where_used').click(function(){
+				result_container = document.createElement("INPUT");
+					result_container.setAttribute("id","autocomplete-list"); 
+					result_container.setAttribute("class","autocomplete-items");
+					result_container.setAttribute("readonly", "true");
+					result_container.setAttribute("onclick", "alert('YES')");
+				this.parentNode.appendChild(result_container);
+			
+				
+			});
+	});
+
+</script>
+ 
  <!-- Fill table rows -->
 
  <table id="sbom_tree">
+ 
+	
+	<div>
+	
 	<caption>
 		<button id="expand" style="font-size: 10px">Expand All</button>
 		<button id="collapse" style="font-size: 10px">Collapse All</button>
-		<button id="colorize" style="font-size: 10px">Color</button>
+		<button id="colorize" style="font-size: 10px"> Toggle Color </button>
+	
+	<span id="where">Where used: </span>
+		<div class="autocomplete">
+			
+			<input id="where_used" type="text" placeholder="name;version id"></input>
+		<!--	<div id="autocomplete-list" class="autocomplete-items"><input></input></div> -->
+
+		</div>
+	
 	</caption>
+	
+	
+	
+	</div>
+	
+	
+	
 	
 	<thead>
 	<tr>
@@ -169,7 +240,7 @@
 			echo '</tr>';
 		}
 
-		
+		// Prints out leaf node data under children of child() function
 		function leaf($leaf_ary){
 			echo '<td></td>';
 			
@@ -218,7 +289,7 @@
 						color(child_nodes, "#ffff4d");
 						color(leaf_nodes, "#009900");
 						
-						document.getElementById("colorize").innerHTML = "No color";		
+						//document.getElementById("colorize").innerHTML = "No color";		
 						
 						flag = 1;
 					}
@@ -228,7 +299,7 @@
 						color(child_nodes, "#f9f9f9");
 						color(leaf_nodes, "white");
 						
-						document.getElementById("colorize").innerHTML = "Color";		
+						//document.getElementById("colorize").innerHTML = "Color";		
 						flag = 0;
 					}
 					
