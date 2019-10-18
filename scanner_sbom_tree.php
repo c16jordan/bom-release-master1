@@ -41,12 +41,16 @@
 	$bom_ary;	// Not so nice 3-dimensional array that stores BOM table data. But, because no searching is involved you just enter the associative keys to access the data.
 	$base_key;	// Stores base node data
 	$root_key;	// Stores root node data
-    
-
+    $autocomplete = []; // Stores all app and cmp names 
+	$autocomplete_num = []; // Numerically indexed keys from $autocomplete
+ 		
 		if ($result->num_rows > 0) {
                    
 			while($row = $result->fetch_assoc()) {
 			
+			// Store data for autocomplete
+			$autocomplete[$row["app_name"]] = 1;
+			$autocomplete[$row["cmp_name"]] = 1;
 			
 			// Store relevant components by Application (name+id)
 			
@@ -66,6 +70,13 @@
             echo "0 results";
          }
 		 
+	 // Convert $autocomplete associative array into a numerically index array for easier access
+	
+	 foreach($autocomplete as $name=>$value){
+		 $autocomplete_num[] = $name;
+	 }
+	 sort($autocomplete_num);
+	 
      $result->close();
      ?>
 <!-- https://www.w3schools.com/howto/howto_js_autocomplete.asp -->
@@ -101,25 +112,6 @@
 }
 
 </style>
-
-
-<script>
-	var result_container;
-
-	$(document).ready(function(){
-			$('#where_used').click(function(){
-				result_container = document.createElement("INPUT");
-					result_container.setAttribute("id","autocomplete-list"); 
-					result_container.setAttribute("class","autocomplete-items");
-					result_container.setAttribute("readonly", "true");
-					result_container.setAttribute("onclick", "alert('YES')");
-				this.parentNode.appendChild(result_container);
-			
-				
-			});
-	});
-
-</script>
  
  <!-- Fill table rows -->
 
@@ -267,10 +259,47 @@
 				});
 		});
 		
+
 		$(document).ready(function(){
 				$("#collapse").click(function(){
 					$('#sbom_tree').treetable('collapseAll');
 					//alert("Collapse");
+				});
+		});
+		
+	
+		$(document).ready(function(){
+				$("#where_used").keydown(function(){
+					
+					// Retrieve php values and store them into a javascript array
+					var autocomplete = JSON.parse('<?php echo json_encode($autocomplete_num);?>');
+					
+					// function to create the list
+					// function to kill the list
+					// function to get the list
+					
+					
+					// create a variable to see if list has been set, if so destroy old list 
+					// and replace with new
+					
+					
+					for(var index=0; index < autocomplete.length; index++){
+						result_container = document.createElement("INPUT");
+						result_container.setAttribute("id","autocomplete-list"); 
+						result_container.setAttribute("class","autocomplete-items");
+						result_container.setAttribute("readonly", "true");
+						result_container.setAttribute("value", autocomplete[index]);
+						//result_container.setAttribute("onclick", "alert('YES')");
+						this.parentNode.appendChild(result_container);
+					}
+				
+			
+										
+				});
+				
+				$("#where_used").change(function(){
+					// Pull up tree nodes - kill menu
+					//alert("Change");
 				});
 		});
 		
@@ -309,6 +338,21 @@
 		
 		</script>
 		
+		
+		<script>
+	var result_container;
+/*
+	$(document).ready(function(){
+			$('#where_used').keydown(function(){
+	
+				
+			});
+	});
+*/
+	
+</script>
+		
+		
 		<script>
 					
 			function color(objects, color){
@@ -330,5 +374,12 @@
 	</div>
 </div>
 
+<p>
+<?php
 
+echo "<pre>";
+print_r($autocomplete_num);
+echo "</pre>"; 
+?>
+</p>
 <?php //include("./footer.php"); ?>
