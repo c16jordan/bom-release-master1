@@ -109,6 +109,38 @@
 	border-bottom: none;
 	background-color: #f9f9f9;
 
+
+	
+}
+
+.root{
+	background-color: #f9f9f9;
+}
+
+.root_colored{
+	background-color: #e60000;
+}
+
+
+.child{
+	background-color: #f9f9f9;
+}
+
+
+.child_colored{
+	background-color: #ffff4d;
+}
+
+.leaf{
+	background-color: white;
+}
+
+.leaf_colored{
+	background-color: #009900;
+}
+
+.highlight_node{
+	background-color: #1E90FF;
 }
 
 </style>
@@ -198,10 +230,10 @@
 		//<tr data-tt-id="x">
 		function base($base, $parent_id){
 			echo '<tr class="root '.$base.'" data-tt-id="'.$parent_id.'">';
-			echo '<td>'.$base.'</td>';
+			echo '<td class="root">'.$base.'</td>';
 			
 			for($index=0; $index < 8; $index++){
-					echo '<td></td>';
+					echo '<td class="root"></td>';
 			}
 			
 			echo "</tr>";
@@ -212,11 +244,11 @@
 		    $root = explode("@",$root);
 			echo '<tr class="child '.$root[0].'" data-tt-id="'.$parent_id.'.'.$root_id.'" data-tt-parent-id="'.$parent_id.'">';
 				
-				echo '<td>'.$root[0].'</td>';
-				echo '<td>'.$root[1].'</td>';
+				echo '<td class="child">'.$root[0].'</td>';
+				echo '<td class="child">'.$root[1].'</td>';
 				
 				for($index=0; $index < 7; $index++){
-					echo '<td></td>';
+					echo '<td class="child"></td>';
 				}
 			echo '</tr>';
 		}
@@ -224,7 +256,7 @@
 		//<tr data-tt-id="x.x.x">
 		function child($child, $child_ary, $parent_id, $child_id){
 			echo '<tr class="leaf '.$child.'" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
-				echo '<td>'.$child.'</td>';	
+				echo '<td class="leaf">'.$child.'</td>';	
 				
 				foreach($child_ary as $leaf=>$data)
 					leaf($data);
@@ -234,10 +266,10 @@
 
 		// Prints out leaf node data under children of child() function
 		function leaf($leaf_ary){
-			echo '<td></td>';
+			echo '<td class="leaf"></td>';
 			
 			foreach($leaf_ary as $key=>$value){
-				echo '<td>'.$value.'</td>';
+				echo '<td class="leaf">'.$value.'</td>';
 			}
 	    }
 ?>	
@@ -266,69 +298,37 @@
 					//alert("Collapse");
 				});
 		});
-		
 	
 		$(document).ready(function(){
-				$("#where_used").keydown(function(){
-					
-					// Retrieve php values and store them into a javascript array
-					var autocomplete = JSON.parse('<?php echo json_encode($autocomplete_num);?>');
-					
-					// function to create the list
-					// function to kill the list
-					// function to get the list
-					
-					
-					// create a variable to see if list has been set, if so destroy old list 
-					// and replace with new
-					
-					
-					for(var index=0; index < autocomplete.length; index++){
-						result_container = document.createElement("INPUT");
-						result_container.setAttribute("id","autocomplete-list"); 
-						result_container.setAttribute("class","autocomplete-items");
-						result_container.setAttribute("readonly", "true");
-						result_container.setAttribute("value", autocomplete[index]);
-						//result_container.setAttribute("onclick", "alert('YES')");
-						this.parentNode.appendChild(result_container);
+				$("#where_used").keydown(function(event){
+					$key_pressed = event.which;
+					if($key_pressed === 13){
+						selectElement(document.getElementById("where_used").value);
 					}
-				
-			
-										
-				});
-				
-				$("#where_used").change(function(){
-					// Pull up tree nodes - kill menu
-					//alert("Change");
 				});
 		});
 		
-	
-		
 		$(document).ready(function(){
 				$("#colorize").click(function(){			
-					
-					var root_nodes = document.getElementsByClassName("root");
-					var child_nodes = document.getElementsByClassName("child");
-					var leaf_nodes = document.getElementsByClassName("leaf");
-					
+									
+				var root_nodes = document.getElementsByClassName("root");
+				var child_nodes = document.getElementsByClassName("child");
+				var leaf_nodes = document.getElementsByClassName("leaf");
+									
 					if(flag == 0){	
 							
-						color(root_nodes, "#e60000");
-						color(child_nodes, "#ffff4d");
-						color(leaf_nodes, "#009900");
-						
-						//document.getElementById("colorize").innerHTML = "No color";		
+						color(root_nodes, "root_colored");
+						color(child_nodes, "child_colored");
+						color(leaf_nodes, "leaf_colored");
 						
 						flag = 1;
 					}
 					else if(flag == 1){
 						
-						color(root_nodes, "#f9f9f9");
-						color(child_nodes, "#f9f9f9");
-						color(leaf_nodes, "white");
-						
-						//document.getElementById("colorize").innerHTML = "Color";		
+						removeColor(root_nodes, "root_colored");
+						removeColor(child_nodes, "child_colored");
+						removeColor(leaf_nodes, "leaf_colored");
+							
 						flag = 0;
 					}
 					
@@ -355,14 +355,52 @@
 		
 		<script>
 					
-			function color(objects, color){
+			function removeColor(node, class_name){				
 				
-				for(var index=0; index < objects.length ;index++){
-						objects[index].style.backgroundColor = color;
+				for(var i = 0; i < node.length ;i++){
+					node[i].classList.remove(class_name);
 				}
 				
 			}
 			
+					
+			function color(node, class_name){
+		
+				for(var i = 0; i < node.length ;i++){
+					node[i].classList.add(class_name);
+				}
+				
+			}
+			
+			//function selectElement(object){
+			function selectElement(target){
+				
+				var results;
+				var exist_highlight;
+				var children;
+				
+				results	= document.getElementsByClassName(target);
+				children = results[0];
+				
+				alert("COLORING");
+				
+				color(children, "highlight_node");
+				/*
+				for(var parent_index = 0; parent_index < results.length ; parent_index++){
+
+					children = results[parent_index].children;
+					var node = (results[parent_index].getAttribute("data-tt-id"));
+				
+					for(var child_index = 0; child_index < children.length ;child_index++){
+						children[child_index].style.backgroundColor = "#1E90FF";
+
+					}
+					
+					$("#sbom_tree").treetable("reveal", node);
+				}
+					*/		
+			}
+						
 		</script>
 		
 		
@@ -376,10 +414,11 @@
 
 <p>
 <?php
-
+/*
 echo "<pre>";
 print_r($autocomplete_num);
 echo "</pre>"; 
+*/
 ?>
 </p>
 <?php //include("./footer.php"); ?>
