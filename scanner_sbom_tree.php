@@ -302,7 +302,7 @@
 		$(document).ready(function(){
 				$("#where_used").keydown(function(event){
 					$key_pressed = event.which;
-					if($key_pressed === 13){
+					if($key_pressed == 13){
 						selectElement(document.getElementById("where_used").value);
 					}
 				});
@@ -354,9 +354,10 @@
 		
 		
 		<script>
-					
+			var highlighted;
+			
 			function removeColor(node, class_name){				
-				
+
 				for(var i = 0; i < node.length ;i++){
 					node[i].classList.remove(class_name);
 				}
@@ -374,17 +375,41 @@
 			
 			//function selectElement(object){
 			function selectElement(target){
-				
+
 				var results;
-				var exist_highlight;
+				var highlighted;
 				var children;
 				
+				exist_highlighted = document.getElementsByClassName("highlight_node");
+				
+				if(exist_highlighted.length > 0){
+	
+					for(var exist_index = 0; exist_index < exist_highlighted.length; exist_index++){
+						
+						
+						//alert( exist_highlighted[0].getAttribute("") );
+						//var child = exist_highlighted[exist_index];
+						//removeColor(child, "highlight_node");
+					}
+				
+				}
+				
+				
+				
 				results	= document.getElementsByClassName(target);
-				children = results[0];
 				
-				alert("COLORING");
 				
-				color(children, "highlight_node");
+				for(var result_index = 0; result_index < results.length; result_index++){
+					
+					var node = (results[result_index].getAttribute("data-tt-id"));
+					$("#sbom_tree").treetable("reveal", node);
+					
+					children = results[result_index].children;
+					color(children, "highlight_node");
+				
+				}
+				
+		
 				/*
 				for(var parent_index = 0; parent_index < results.length ; parent_index++){
 
