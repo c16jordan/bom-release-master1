@@ -155,10 +155,9 @@
 		<button id="colorize" style="font-size: 10px"> Toggle Color </button>
 		<button id="reds" style="font-size: 10px">Reds</button>
 		<button id="red_yellow" style="font-size: 10px"> Reds and Yellows </button>
+		<button id="where_button" style="font-size: 10px; margin-left:25px">Where used</button>
 	
-	<span id="where">Where used: </span>
 		<div class="autocomplete">
-			
 			<input id="where_used" type="text" placeholder="name;version id"></input>
 		<!--	<div id="autocomplete-list" class="autocomplete-items"><input></input></div> -->
 
@@ -295,6 +294,12 @@
 				$("#collapse").click(function(){
 					$('#sbom_tree').treetable('collapseAll');
 					//alert("Collapse");
+				});
+		});
+	
+		$(document).ready(function(){
+				$("#where_button").click(function(){
+					selectElement(document.getElementById("where_used").value);
 				});
 		});
 	
