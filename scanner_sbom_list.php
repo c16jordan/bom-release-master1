@@ -12,12 +12,7 @@
 
       <h3 style = "color: #01B0F1;">Scanner --> Software BOM </h3>
 
-    </div>
-</div>
-<div class="right-content">
-    <div class="container">
 
-      <h3 style = "color: #01B0F1;">Scanner -> System Releases List</h3>
 
         <h3><img src="images/releases.png" style="max-height: 35px;" />System Releases</h3>
 
@@ -100,7 +95,8 @@ $result = $db->query($sql);
               </tbody>
         </table>
 
-
+	</div>
+</div>
         <script type="text/javascript" language="javascript">
     $(document).ready( function () {
         
