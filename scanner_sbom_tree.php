@@ -86,6 +86,13 @@
 	margin-right: 5px;
 }
 
+#error{
+	color: red;
+	font-size: 10px;
+	display: inline-block;
+	left:0;
+	position: relative;
+}
 
 .autocomplete{
 	width:150px; 
@@ -157,12 +164,17 @@
 		<button id="red_yellow" style="font-size: 10px"> Reds and Yellows </button>
 		<button id="where_button" style="font-size: 10px; margin-left:25px">Where used</button>
 	
+	<!--
+		Probably abandon this autocomplete drop down list
 		<div class="autocomplete">
-			<input id="where_used" type="text" placeholder="name;version id"></input>
-		<!--	<div id="autocomplete-list" class="autocomplete-items"><input></input></div> -->
-
+			
+		<div id="autocomplete-list" class="autocomplete-items"><input></input></div> 
 		</div>
-	
+	-->
+		
+		<input id="where_used" type="text" placeholder="name;[version id] option"></input>
+		<span id="error"></span>
+		
 	</caption>
 	
 	
@@ -299,7 +311,15 @@
 	
 		$(document).ready(function(){
 				$("#where_button").click(function(){
-					selectElement(document.getElementById("where_used").value);
+					
+					var value = document.getElementById("where_used").value;
+				
+				
+					if(checkInput(value)){
+						value = formatInput(value);
+						selectElement(value);
+					}
+					
 				});
 		});
 	
@@ -307,7 +327,12 @@
 				$("#where_used").keydown(function(event){
 					$key_pressed = event.which;
 					if($key_pressed == 13){
-						selectElement(document.getElementById("where_used").value);
+						var value = document.getElementById("where_used").value;
+						
+						if(checkInput(value)){
+							value = formatInput(value);
+							selectElement(value);
+						}
 					}
 				});
 		});
@@ -561,6 +586,29 @@
 						
 					}
 					
+			}
+			
+			function checkInput(input_value){
+			
+				var pattern = /[a-z0-9_]+;[ a-z0-9.]*/;
+				var found_match;
+				
+				if( pattern.test(input_value) == false){
+					document.getElementById("error").innerHTML = "Incorrect format: [name;version_id]";
+					found_match = false;
+				}
+				else{
+					document.getElementById("error").innerHTML = "";
+					found_match = true;
+				}
+				return found_match;
+			}
+			
+			function formatInput(string){
+				
+				string = string.replace(";", " ");
+				
+				return string;
 			}
 			
 		</script>
