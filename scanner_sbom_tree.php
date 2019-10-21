@@ -356,6 +356,9 @@
 		<script>
 			var highlighted;
 			
+			// Did not use - just collapse the whole tree when highlighting new elements 
+			//var node_ids = []; 
+			
 			function removeColor(node, class_name){				
 				
 				for(var i = 0; i < node.length ;i++){
@@ -389,6 +392,8 @@
 				for(var result_index = 0; result_index < results.length; result_index++){
 					
 					var node = (results[result_index].getAttribute("data-tt-id"));
+					//node_ids.push(node);
+					
 					$("#sbom_tree").treetable("reveal", node);
 					
 					children = results[result_index].children;
@@ -396,21 +401,6 @@
 				
 				}
 				
-		
-				/*
-				for(var parent_index = 0; parent_index < results.length ; parent_index++){
-
-					children = results[parent_index].children;
-					var node = (results[parent_index].getAttribute("data-tt-id"));
-				
-					for(var child_index = 0; child_index < children.length ;child_index++){
-						children[child_index].style.backgroundColor = "#1E90FF";
-
-					}
-					
-					$("#sbom_tree").treetable("reveal", node);
-				}
-					*/		
 			}
 					
 
@@ -429,6 +419,8 @@
 							node.classList.remove("highlight_node");
 						}
 						
+						// Why look for an individual node? Collapse the whole tree after removing highlighting
+						$("#sbom_tree").treetable("collapseAll");
 						
 						
 					}
