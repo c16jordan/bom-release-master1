@@ -593,7 +593,11 @@
 				var pattern = /[a-z0-9_]+;[ a-z0-9.]*/;
 				var found_match;
 				
-				if( pattern.test(input_value) == false){
+				if(input_value === ""){
+					document.getElementById("error").innerHTML = "";
+					found_match = true;
+				}
+				else if( pattern.test(input_value) == false){
 					document.getElementById("error").innerHTML = "Incorrect format: [name;version_id]";
 					found_match = false;
 				}
