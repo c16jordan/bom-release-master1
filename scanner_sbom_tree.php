@@ -307,31 +307,113 @@
 				});
 		});
 		
+		var highlighted;
+		var reds = false; // Flag to verify reds class active
+		var reds_yellows = false;	// Flag to verify reds_yellow class active
+		var colors = false;
+		
+		var reds_toggle = 0;
 		
 		$(document).ready(function(){
 				$("#reds").click(function(){
-					alert("To be done");
-					/*
-					var root_nodes = document.getElementsByClassName("root");
-					color(root_nodes, "root_colored");
 					
-					reds = true;
-					*/
+					var root_nodes = document.getElementsByClassName("root");
+					
+					if(reds_yellows){
+
+						var yellow_nodes = document.getElementsByClassName("child_colored");	
+						removeColor(yellow_nodes, "child_colored");
+					
+						reds_yellows_toggle = 0;
+						reds_yellows = false;
+					}
+					
+					if(colors){
+					
+						var root_nodes = document.getElementsByClassName("root");
+						var child_nodes = document.getElementsByClassName("child");
+						var leaf_nodes = document.getElementsByClassName("leaf");
+						
+						removeColor(root_nodes, "root_colored");
+						removeColor(child_nodes, "child_colored");
+						removeColor(leaf_nodes, "leaf_colored");
+							
+						colors = false;
+						flag = 0;
+					
+					}
+					
+					
+					if(reds_toggle == 0){
+						
+						color(root_nodes, "root_colored");
+					
+						reds_toggle = 1;
+						reds = true;
+					}
+					else if(reds_toggle == 1){
+
+						removeColor(root_nodes, "root_colored");
+					
+						reds_toggle = 0;
+						reds = false;
+					}
+					
 				});
 		});
 		
+		var reds_yellows_toggle = 0;
+		
 		$(document).ready(function(){
 				$("#red_yellow").click(function(){
-					alert("To be done");
-					/*
+
+				
+				if(reds){
+					var red_nodes = document.getElementsByClassName("root_colored");
+					removeColor(red_nodes,"root_colored");
+					
+					reds_toggle = 0;
+					reds = false;
+				}
+				
+				if(colors){
+					
+						var root_nodes = document.getElementsByClassName("root");
+						var child_nodes = document.getElementsByClassName("child");
+						var leaf_nodes = document.getElementsByClassName("leaf");
+						
+						removeColor(root_nodes, "root_colored");
+						removeColor(child_nodes, "child_colored");
+						removeColor(leaf_nodes, "leaf_colored");
+							
+						colors = false;
+						flag = 0;
+					
+				}
+				
 					var root_nodes = document.getElementsByClassName("root");
 					var child_nodes = document.getElementsByClassName("child");
 					
-					color(root_nodes, "child_colored");
-					color(child_nodes, "child_colored");
+					if(reds_yellows_toggle == 0){
+						
+						color(root_nodes, "child_colored");
+						color(child_nodes, "child_colored");
 					
-					reds_yellows = true;
-					*/
+						reds_yellows_toggle = 1;
+						reds_yellows = true;
+		
+					}
+					else if(reds_yellows_toggle == 1){
+
+						removeColor(root_nodes, "child_colored");
+						removeColor(child_nodes, "child_colored");
+					
+						reds_yellows_toggle = 0;
+						reds_yellows = false;
+
+					}
+					
+					
 				});
 		});
 		
@@ -339,17 +421,22 @@
 				$("#colorize").click(function(){			
 									
 				if(reds){
-					var reds = document.getElementsByClassName("root_colored");
-					removeColor(reds,"root_colored");
-				}
-				if(reds_yellows){
-					var yellow_roots = document.getElementsByClassName("root_colored");
-					var yellow_children = document.getElementsByClassName("child_colored");
+					var red_nodes = document.getElementsByClassName("root_colored");
+					removeColor(red_nodes,"root_colored");
 					
-					removeColor(yellow_roots, "child_colored");
-					removeColor(yellow_children, "child_colored");
+					reds_toggle = 0;
+					reds = false;
 				}
+				
+				if(reds_yellows){
 
+					var yellow_nodes = document.getElementsByClassName("child_colored");	
+					removeColor(yellow_nodes, "child_colored");
+					
+					reds_yellows_toggle = 0;
+					reds_yellows = false;
+				}
+									
 				var root_nodes = document.getElementsByClassName("root");
 				var child_nodes = document.getElementsByClassName("child");
 				var leaf_nodes = document.getElementsByClassName("leaf");
@@ -359,7 +446,8 @@
 						color(root_nodes, "root_colored");
 						color(child_nodes, "child_colored");
 						color(leaf_nodes, "leaf_colored");
-						
+							
+						colors = true;
 						flag = 1;
 					}
 					else if(flag == 1){
@@ -368,6 +456,7 @@
 						removeColor(child_nodes, "child_colored");
 						removeColor(leaf_nodes, "leaf_colored");
 							
+						colors = false;
 						flag = 0;
 					}
 					
@@ -380,9 +469,7 @@
 		
 		
 		<script>
-			var highlighted;
-			var reds = false; // Flag to verify reds class active
-			var reds_yellows = false;	// Flag to verify reds_yellow class active
+	
 			
 			// Did not use - just collapse the whole tree when highlighting new elements 
 			//var node_ids = []; 
@@ -408,7 +495,7 @@
 			
 					
 			function color(node_list, class_name){
-		
+						
 				var length = node_list.length;
 				node_list = Array.from(node_list);
 				
