@@ -357,7 +357,7 @@
 			var highlighted;
 			
 			function removeColor(node, class_name){				
-
+				
 				for(var i = 0; i < node.length ;i++){
 					node[i].classList.remove(class_name);
 				}
@@ -377,25 +377,12 @@
 			function selectElement(target){
 
 				var results;
-				var highlighted;
 				var children;
 				
-				exist_highlighted = document.getElementsByClassName("highlight_node");
+				highlighted = document.getElementsByClassName("highlight_node");
 				
-				if(exist_highlighted.length > 0){
-	
-					for(var exist_index = 0; exist_index < exist_highlighted.length; exist_index++){
-						
-						
-						//alert( exist_highlighted[0].getAttribute("") );
-						//var child = exist_highlighted[exist_index];
-						//removeColor(child, "highlight_node");
-					}
-				
-				}
-				
-				
-				
+				removeHighlighted(highlighted);
+								
 				results	= document.getElementsByClassName(target);
 				
 				
@@ -425,7 +412,29 @@
 				}
 					*/		
 			}
+					
+
+
+			function removeHighlighted(node_list){
+					
+					var length = node_list.length;
+					node_list = Array.from(node_list);
+				
+					if(node_list.length > 0){						
 						
+						for(var exist_index = 0; exist_index < node_list.length; exist_index++){				
+							
+							//https://stackoverflow.com/questions/15843581/how-to-correctly-iterate-through-getelementsbyclassname
+							node = node_list[exist_index]; // This is how to access nodelist / document.getElementsByClassName nodelists without skips
+							node.classList.remove("highlight_node");
+						}
+						
+						
+						
+					}
+					
+			}
+			
 		</script>
 		
 		
