@@ -107,10 +107,7 @@
 	border-top: none;
 	border-left: 2px solid #f9f9f9;
 	border-bottom: none;
-	background-color: #f9f9f9;
-
-
-	
+	background-color: #f9f9f9;	
 }
 
 .root{
@@ -156,6 +153,8 @@
 		<button id="expand" style="font-size: 10px">Expand All</button>
 		<button id="collapse" style="font-size: 10px">Collapse All</button>
 		<button id="colorize" style="font-size: 10px"> Toggle Color </button>
+		<button id="reds" style="font-size: 10px">Reds</button>
+		<button id="red_yellow" style="font-size: 10px"> Reds and Yellows </button>
 	
 	<span id="where">Where used: </span>
 		<div class="autocomplete">
@@ -308,9 +307,49 @@
 				});
 		});
 		
+		
+		$(document).ready(function(){
+				$("#reds").click(function(){
+					alert("To be done");
+					/*
+					var root_nodes = document.getElementsByClassName("root");
+					color(root_nodes, "root_colored");
+					
+					reds = true;
+					*/
+				});
+		});
+		
+		$(document).ready(function(){
+				$("#red_yellow").click(function(){
+					alert("To be done");
+					/*
+					var root_nodes = document.getElementsByClassName("root");
+					var child_nodes = document.getElementsByClassName("child");
+					
+					color(root_nodes, "child_colored");
+					color(child_nodes, "child_colored");
+					
+					reds_yellows = true;
+					*/
+				});
+		});
+		
 		$(document).ready(function(){
 				$("#colorize").click(function(){			
 									
+				if(reds){
+					var reds = document.getElementsByClassName("root_colored");
+					removeColor(reds,"root_colored");
+				}
+				if(reds_yellows){
+					var yellow_roots = document.getElementsByClassName("root_colored");
+					var yellow_children = document.getElementsByClassName("child_colored");
+					
+					removeColor(yellow_roots, "child_colored");
+					removeColor(yellow_children, "child_colored");
+				}
+
 				var root_nodes = document.getElementsByClassName("root");
 				var child_nodes = document.getElementsByClassName("child");
 				var leaf_nodes = document.getElementsByClassName("leaf");
@@ -339,44 +378,53 @@
 		</script>
 		
 		
-		<script>
-	var result_container;
-/*
-	$(document).ready(function(){
-			$('#where_used').keydown(function(){
-	
-				
-			});
-	});
-*/
-	
-</script>
-		
 		
 		<script>
 			var highlighted;
+			var reds = false; // Flag to verify reds class active
+			var reds_yellows = false;	// Flag to verify reds_yellow class active
 			
 			// Did not use - just collapse the whole tree when highlighting new elements 
 			//var node_ids = []; 
 			
-			function removeColor(node, class_name){				
+			function removeColor(node_list, class_name){				
 				
-				for(var i = 0; i < node.length ;i++){
-					node[i].classList.remove(class_name);
+				
+				var length = node_list.length;
+				node_list = Array.from(node_list);
+				
+					if(node_list.length > 0){						
+						
+						for(var exist_index = 0; exist_index < node_list.length; exist_index++){				
+							
+							//https://stackoverflow.com/questions/15843581/how-to-correctly-iterate-through-getelementsbyclassname
+							node = node_list[exist_index]; // This is how to access nodelist / document.getElementsByClassName nodelists without skips
+							node.classList.remove(class_name);
+						}						
+						
 				}
 				
 			}
 			
 					
-			function color(node, class_name){
+			function color(node_list, class_name){
 		
-				for(var i = 0; i < node.length ;i++){
-					node[i].classList.add(class_name);
-				}
+				var length = node_list.length;
+				node_list = Array.from(node_list);
 				
+				if(node_list.length > 0){						
+					
+					for(var exist_index = 0; exist_index < node_list.length; exist_index++){				
+							
+						//https://stackoverflow.com/questions/15843581/how-to-correctly-iterate-through-getelementsbyclassname
+						node = node_list[exist_index]; // This is how to access nodelist / document.getElementsByClassName nodelists without skips
+						node.classList.add(class_name);
+					}						
+						
+				}
+	
 			}
 			
-			//function selectElement(object){
 			function selectElement(target){
 
 				var results;
@@ -392,8 +440,7 @@
 				for(var result_index = 0; result_index < results.length; result_index++){
 					
 					var node = (results[result_index].getAttribute("data-tt-id"));
-					//node_ids.push(node);
-					
+
 					$("#sbom_tree").treetable("reveal", node);
 					
 					children = results[result_index].children;
@@ -407,21 +454,18 @@
 
 			function removeHighlighted(node_list){
 					
-					var length = node_list.length;
-					node_list = Array.from(node_list);
-				
+					var length = node_list.length;				
+
 					if(node_list.length > 0){						
 						
 						for(var exist_index = 0; exist_index < node_list.length; exist_index++){				
 							
-							//https://stackoverflow.com/questions/15843581/how-to-correctly-iterate-through-getelementsbyclassname
-							node = node_list[exist_index]; // This is how to access nodelist / document.getElementsByClassName nodelists without skips
-							node.classList.remove("highlight_node");
+							removeColor(node_list,"highlight_node");
+
 						}
 						
 						// Why look for an individual node? Collapse the whole tree after removing highlighting
 						$("#sbom_tree").treetable("collapseAll");
-						
 						
 					}
 					
