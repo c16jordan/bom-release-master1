@@ -1,0 +1,64 @@
+#where{
+	margin-right: 5px;
+}
+
+#error{
+	color: red;
+	font-size: 10px;
+	display: inline-block;
+	left:0;
+	position: relative;
+}
+
+.autocomplete{
+	width:150px; 
+	display:inline-block;
+	position:absolute;
+}
+
+.autocomplete-list{
+	width:200px;
+	position: absolute;
+	top:100%;
+	left:0;
+	right:0;
+	z-index:99;
+	background-color: #fff;
+}
+
+.autocomplete-items{
+	border-top: none;
+	border-left: 2px solid #f9f9f9;
+	border-bottom: none;
+	background-color: #f9f9f9;	
+}
+
+.root{
+	background-color: #f9f9f9;
+}
+
+.root_colored{
+	background-color: #e60000;
+}
+
+
+.child{
+	background-color: #f9f9f9;
+}
+
+
+.child_colored{
+	background-color: #ffff4d;
+}
+
+.leaf{
+	background-color: white;
+}
+
+.leaf_colored{
+	background-color: #009900;
+}
+
+.highlight_node{
+	background-color: #1E90FF;
+}
