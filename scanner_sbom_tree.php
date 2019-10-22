@@ -590,7 +590,7 @@
 			
 			function checkInput(input_value){
 			
-				var pattern = /[a-z0-9_]+;[ a-z0-9.]*/;
+				var pattern = /[a-z0-9_]+[;, ]?[ a-z0-9.]*/;
 				var found_match;
 				
 				if(input_value === ""){
@@ -610,7 +610,17 @@
 			
 			function formatInput(string){
 				
-				string = string.replace(";", " ");
+				if(string.indexOf(';') !== -1){
+					string = string.replace(';', ' ');
+				}
+				else if(string.indexOf(',') !== -1){
+					string = string.replace(',', ' ');
+				}
+				else{
+				// Substitute for any number of whitespace chars between letters with only one whitespace
+				input_value = input_value.replace(/\s+/g, " ");
+			}
+			
 				
 				return string;
 			}
