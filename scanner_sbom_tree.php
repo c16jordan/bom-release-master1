@@ -314,11 +314,9 @@
 					
 					var value = document.getElementById("where_used").value;
 				
-				
-					if(checkInput(value)){
 						value = formatInput(value);
 						selectElement(value);
-					}
+					
 					
 				});
 		});
@@ -329,10 +327,9 @@
 					if($key_pressed == 13){
 						var value = document.getElementById("where_used").value;
 						
-						if(checkInput(value)){
-							value = formatInput(value);
-							selectElement(value);
-						}
+						value = formatInput(value);
+						selectElement(value);
+						
 					}
 				});
 		});
@@ -588,39 +585,14 @@
 					
 			}
 			
-			function checkInput(input_value){
-			
-				var pattern = /[a-z0-9_]+[;, ]?[ a-z0-9.]*/;
-				var found_match;
-				
-				if(input_value === ""){
-					document.getElementById("error").innerHTML = "";
-					found_match = true;
-				}
-				else if( pattern.test(input_value) == false){
-					document.getElementById("error").innerHTML = "Incorrect format: [name;version_id]";
-					found_match = false;
-				}
-				else{
-					document.getElementById("error").innerHTML = "";
-					found_match = true;
-				}
-				return found_match;
-			}
-			
 			function formatInput(string){
-				
+			
 				if(string.indexOf(';') !== -1){
 					string = string.replace(';', ' ');
 				}
 				else if(string.indexOf(',') !== -1){
 					string = string.replace(',', ' ');
 				}
-				else{
-				// Substitute for any number of whitespace chars between letters with only one whitespace
-				input_value = input_value.replace(/\s+/g, " ");
-			}
-			
 				
 				return string;
 			}
