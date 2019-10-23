@@ -56,9 +56,11 @@
 	</thead>
 	
 	<tbody id="treeSpace">
-		<?php initialPhpMakeTree($db); ?>
+	
 	</tbody>
-
+	<p>
+		<?php //phpMakeTree($db); ?>
+	</p>
 </table>	
 		
 		
@@ -115,7 +117,7 @@
 		
 		
 		var highlighted;
-		var reds = true; // Flag to verify reds class active
+		var reds = false; // Flag to verify reds class active
 		var reds_yellows = false;	// Flag to verify reds_yellow class active
 		var colors = false;
 		
@@ -138,16 +140,15 @@
 				});
 		});
 		
-		/*
 		$(document).ready(function(){
 			<?php phpMakeTree($db); ?>
 			$('#sbom_tree').treetable("expandAll");
 			$('#sbom_tree').treetable("collapseAll");
 		});
-		*/
+		
 		
 		var reds_yellows_toggle = 0;
-
+/*					HEREERERERERE    	*/		
 		$(document).ready(function(){
 				$("#red_yellow").click(function(){
 										
@@ -206,6 +207,9 @@
 			// Did not use - just collapse the whole tree when highlighting new elements 
 			//var node_ids = []; 
 			
+			function makeTree(){
+				<?php //phpMakeTree($db); ?>
+			}
 			
 			function destroyTree(){
 				var root_ary = document.getElementsByClassName("root branch");
@@ -403,7 +407,7 @@
 
 	
 	// Set up the root nodes
-	function phpMakeTree($db, $reds_yellows=false){
+		function phpMakeTree($db, $reds_yellows=false){
 			
 			$root_id=1;
 			$child_id = 1;
@@ -562,97 +566,6 @@
 
 		return $root_id;
 	}
-
-
-	function initialPhpMakeTree($db){
-			
-			$parent_id=1;
-			$root_id = 1;
-			$child_id = 1;
-		
-			$bom_ary = callDB($db);
-		
-			ksort($bom_ary);
-		
-			// Set up base - App names only
-			foreach($bom_ary as $base=>$root_ary){
-			
-				initialRoot($base, $parent_id);
-			
-				// Set up root - App names + Versions only
-				foreach($root_ary as $root=>$cmp_array){
-					
-					initialChild($root, $parent_id, $root_id);
-				
-					$child_parent = $parent_id.'.'.$root_id;
-				
-					// Set up component - Cmp Name + Versions only
-					foreach($cmp_array as $child=>$cmp_values){
-				
-						initialLeaf($child, $cmp_values, $child_parent ,$child_id);	
-						$child_id++;
-					}
-				
-					$child_id = 1;
-					$root_id++;
-				}
-			
-				$root_id = 1;
-				$parent_id++;
-			}
-		
-		}
-	
-		//<tr data-tt-id="x">
-	function initialRoot($root, $id){
-			
-		echo '<tr class="root '.$root.'" data-tt-id="'.$id.'">';
-		echo '<td class="root">'.$root.'</td>';
-		
-		for($index=0; $index < 8; $index++){
-				echo '<td class="root"></td>';
-		}
-		
-		echo "</tr>";
-		
-	}
-
-	//<tr data-tt-id="x.x">
-	function initialChild($child, $parent_id, $child_id){
-		
-	    $child = explode("@",$child);
-		echo '<tr class="child '.$child[0].'" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
-				
-			echo '<td class="child">'.$child[0].'</td>';
-			echo '<td class="child">'.$child[1].'</td>';
-				
-			for($index=0; $index < 7; $index++){
-				echo '<td class="child"></td>';
-			}
-		echo '</tr>';
-		
-	}
-
-	//<tr data-tt-id="x.x.x">
-	function initialLeaf($leaf, $leaf_ary, $parent_id, $leaf_id){
-		echo '<tr class="leaf '.$leaf.'" data-tt-id="'.$parent_id.'.'.$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
-			
-			echo '<td class="leaf">'.$leaf.'</td>';	
-			
-			foreach($leaf_ary as $leaf=>$data)
-				initialLeafData($data);
-				
-		echo '</tr>';
-	}
-		
-	// Prints out leaf node data under children of child() function
-	function initialLeafData($leaf_ary){
-		echo '<td class="leaf"></td>';
-		
-		foreach($leaf_ary as $key=>$value){
-			echo '<td class="leaf">'.$value.'</td>';
-		}
-    }
 	
 ?>
 
