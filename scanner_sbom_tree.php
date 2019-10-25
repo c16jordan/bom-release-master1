@@ -168,6 +168,7 @@
 		
 		$(document).ready(function(){
 				$("#colorize").click(function(){			
+
 											
 				var root_nodes = document.getElementsByClassName("root");
 				var child_nodes = document.getElementsByClassName("child");
@@ -179,7 +180,7 @@
 						color(child_nodes, "child_colored");
 						color(leaf_nodes, "leaf_colored");
 							
-						colors = true;
+						//colors = true;
 						color_flag = 1;
 					}
 					else if(color_flag == 1){
@@ -188,10 +189,9 @@
 						removeColor(child_nodes, "child_colored");
 						removeColor(leaf_nodes, "leaf_colored");
 							
-						colors = false;
-						flag = 0;
+
+						color_flag = 0;
 					}
-					
 					
 				});
 		});
