@@ -319,12 +319,13 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			
 			var myObj = JSON.parse(this.responseText);
 			var table = "";
-			
+			var filtered;			
 			
 			table += '<table id="info" cellpadding="0" cellspacing="0" border="0"'
 				  +  'class="datatable table table-striped table-bordered datatable-style table-hover"'
 				  +  'width="100%" style="width: 100px;">';
 			
+			table += '<caption>'+formatForCaption(object, category)+'</caption>';
 			
 			table += "<thead><tr id=\"table-first-row\"><th>App Id</th> <th>App Name</th> <th>App Version</th>"
 				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
@@ -377,6 +378,23 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 		}
 						
 		return param;	
+	}
+	
+	function formatForCaption(string, category){
+		
+		var converted;
+		
+		if(string == "app_status"){
+			converted = "Application Status - "+category;
+		}else if(string == "cmp_status"){
+			converted = "Component Status - "+category;
+		}else if(string == "request_status"){
+			converted = "Request Status - "+category;
+		}else if(string == "request_step"){
+			converted = "Request Step - "+category;
+		}
+		
+		return converted;
 	}
 	
 	</script>

@@ -20,7 +20,6 @@
 		<h3 style = "color: #01B0F1;">Scanner --> BOM Tree</h3>
  
 <!-- https://www.w3schools.com/howto/howto_js_autocomplete.asp -->
- <div id="tables">
  
  <table id="sbom_tree">
  
@@ -57,115 +56,53 @@
 	</thead>
 	
 	<tbody id="treeSpace">
-		<?php initialPhpMakeTree($db); 				
-		?>
+		<?php initialPhpMakeTree($db); ?>
 	</tbody>
 
 </table>	
 		
-
-<table id="sbom_tree2" style="visibility: hidden">
- 
-	<div>
-	
-		<caption>
-			<button id="expand2" style="font-size: 10px">Expand All</button>
-			<button id="collapse2" style="font-size: 10px">Collapse All</button>
-			<button id="colorize2" style="font-size: 10px"> Toggle Color </button>
-			<button id="reds2" style="font-size: 10px">Reds</button>
-			<button id="red_yellow2" style="font-size: 10px"> Reds and Yellows </button>
-			<button id="where_button2" style="font-size: 10px; margin-left:25px">Where used</button>
-	
-			<!--Probably abandon this autocomplete drop down list
-				<div class="autocomplete">
-				<div id="autocomplete-list" class="autocomplete-items"><input></input></div> 
-				</div>
-			-->
 		
-			<input id="where_used2" type="text" placeholder="name;[version id] option"></input>
-			<span id="error"></span>
-		
-		</caption>
-		
-	</div>
-	
 
-	<thead>
-	
-	<tr>
-		<?php setupTheaders(); ?>
-	</tr>
-	
-	</thead>
-	
-	<tbody id="treeSpace2">
-		<?php //initialPhpMakeTree($db); 				
-			  testPhpMakeTree($db); 
-		?>
-	</tbody>
 
-</table>	
-
-</div>
 		<script src="jquery.treetable.js"></script>
 		
 		
 		<script>
-		var active = "#sbom_tree";
-		
 		$(document).ready(function(){
-				$("#expand, #expand2").click(function(){
-					$(active).treetable('expandAll');
+				$("#expand").click(function(){
+					$('#sbom_tree').treetable('expandAll');
 					//alert("Expand");
 				});
 		});
 		
 
 		$(document).ready(function(){
-				$("#collapse, #collapse2").click(function(){
-					$(active).treetable('collapseAll');
+				$("#collapse").click(function(){
+					$('#sbom_tree').treetable('collapseAll');
 					//alert("Collapse");
 				});
 		});
 	
 		$(document).ready(function(){
-				$("#where_button, #where_button2").click(function(){
+				$("#where_button").click(function(){
 					
-					var which;
-					
-					if(active==="#sbom_tree"){
-							which = "where_used";
-					}
-					else if(active==="#sbom_tree2"){
-							which = "where_used2";
-					}
-					
-					var value = document.getElementById(which).value;
+					var value = document.getElementById("where_used").value;
 				
 						value = formatInput(value);
-						selectElement(value, active);
+						selectElement(value);
 					
 					
 				});
 		});
 	
 		$(document).ready(function(){
-				$("#where_used, #where_used2").keydown(function(event){
+				$("#where_used").keydown(function(event){
 					$key_pressed = event.which;
 					if($key_pressed == 13){
-						
-						var which;
-						
-						if(active==="#sbom_tree"){
-							which = "where_used";
-						}else if(active==="#sbom_tree2"){
-							which = "where_used2";
-						}
-						
-						var value = document.getElementById(which).value;
+						var value = document.getElementById("where_used").value;
 						
 						value = formatInput(value);
-						selectElement(value, active);
+						selectElement(value);
 						
 					}
 				});
@@ -181,60 +118,56 @@
 		var reds = true; // Flag to verify reds class active
 		var reds_yellows = false;	// Flag to verify reds_yellow class active
 		var colors = false;
-
 		
 		var reds_toggle = 0;
 		
 		$(document).ready(function(){
-				$("#reds, #reds2").click(function(){
-					
-					if(!reds){
-						reds_yellows = false;
-						reds = true;
-						
-						active = "#sbom_tree";
-					
-						var trees = document.getElementById("tables");
-						var redTree = document.getElementById("sbom_tree");
-						var redYellowTree = document.getElementById("sbom_tree2");
-						
-						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
-						redYellowTree.setAttribute("style", "visibility: hidden");
-						trees.insertBefore(redTree,redYellowTree);
-						redTree.setAttribute("style", "visibility:");
-					}
-				});
-				
+				$("#reds").click(function(){
 		
+					if(!reds){
+						destroyTree();
+						<?php phpMakeTree($db); ?>
+						$('#sbom_tree').treetable("expandAll");
+						$('#sbom_tree').treetable("collapseAll");
+						
+						color_flag = 0;
+						reds = true;
+						reds_yellows = false;
+					}
+					
+				});
 		});
 		
-
+		/*
+		$(document).ready(function(){
+			<?php phpMakeTree($db); ?>
+			$('#sbom_tree').treetable("expandAll");
+			$('#sbom_tree').treetable("collapseAll");
+		});
+		*/
+		
 		var reds_yellows_toggle = 0;
 
 		$(document).ready(function(){
-				$("#red_yellow, #red_yellow2").click(function(){
-					
+				$("#red_yellow").click(function(){
+										
 					if(!reds_yellows){
 						
+						destroyTree();
+						<?php phpMakeTree($db, true); ?>
+						$('#sbom_tree').treetable("expandAll");
+						$('#sbom_tree').treetable("collapseAll");
+						
+						color_flag = 0;
 						reds_yellows = true;
 						reds = false;
-						
-						active = "#sbom_tree2";
-						
-						var trees = document.getElementById("tables");
-						var redTree = document.getElementById("sbom_tree");
-						var redYellowTree = document.getElementById("sbom_tree2");
-	
-						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
-						redTree.setAttribute("style", "visibility: hidden");
-						trees.insertBefore(redYellowTree,redTree);
-						redYellowTree.setAttribute("style", "visibility: visible");
-					}
+					}			
+					
 				});
 		});
 		
 		$(document).ready(function(){
-				$("#colorize, #colorize2").click(function(){			
+				$("#colorize").click(function(){			
 
 											
 				var root_nodes = document.getElementsByClassName("root");
@@ -322,37 +255,29 @@
 	
 			}
 			
-			function selectElement(target, active){
+			function selectElement(target){
 
 				var results;
 				var children;
 				
-				var which;
-				
-				if(active === "#sbom_tree"){
-					which = "sbom_tree";
-				}
-				else if(active === "#sbom_tree2"){
-					which = "sbom_tree2";
-				}
-				
-				highlighted = document.getElementById(which).getElementsByClassName("highlight_node");
+				highlighted = document.getElementsByClassName("highlight_node");
 				
 				removeHighlighted(highlighted);
-										
-				results	= document.getElementById(which).getElementsByClassName(target);
-	
+								
+				results	= document.getElementsByClassName(target);
+				
+				
 				for(var result_index = 0; result_index < results.length; result_index++){
 					
 					var node = (results[result_index].getAttribute("data-tt-id"));
-				
-					$(active).treetable("reveal", node);
+
+					$("#sbom_tree").treetable("reveal", node);
 					
 					children = results[result_index].children;
 					color(children, "highlight_node");
 				
 				}
-
+				
 			}
 					
 
@@ -370,7 +295,7 @@
 						}
 						
 						// Why look for an individual node? Collapse the whole tree after removing highlighting
-						$(active).treetable("collapseAll");
+						$("#sbom_tree").treetable("collapseAll");
 						
 					}
 					
@@ -393,7 +318,6 @@
 		
 		<script>
 			$("#sbom_tree").treetable({ expandable: true });
-			$("#sbom_tree2").treetable({ expandable: true });
 		</script>	
 
 			
@@ -729,148 +653,7 @@
 			echo '<td class="leaf">'.$value.'</td>';
 		}
     }
-
 	
-	
-	
-	/*		TEST		*/
-	
-	
-	function testPhpMakeTree($db){
-			
-			$parent_id=1;
-			$root_id = 1;
-			$child_id = 1;
-		
-			$bom_ary = callDB($db);
-		
-			ksort($bom_ary);
-		
-			// Set up base - App names only
-			foreach($bom_ary as $base=>$root_ary){
-			
-				$leaf_array;
-				
-				testRootRoot($base, $parent_id);
-			
-				// Set up root - App names + Versions only
-				foreach($root_ary as $root=>$cmp_array){
-					
-					$leaf_array = $cmp_array;
-					testRootChild($root, $parent_id, $root_id);
-				
-					$child_parent = $parent_id.'.'.$root_id;
-				
-					// Set up component - Cmp Name + Versions only
-					foreach($cmp_array as $child=>$cmp_values){
-				
-						testRootLeaf($child, $cmp_values, $child_parent ,$child_id);	
-						$child_id++;
-					}
-					
-					
-					$child_id = 1;
-					$root_id++;
-				}
-				$parent_id = test_reds_yellows($root_ary, $parent_id, $leaf_array);
-				
-				$root_id = 1;
-				$parent_id++;
-			}
-		
-		}
-	
-		//<tr data-tt-id="x">
-	function testRootRoot($root, $id){
-			
-		echo '<tr class="root '.$root.'" data-tt-id="'.$id.'">';
-		echo '<td class="root">'.$root.'</td>';
-		
-		for($index=0; $index < 8; $index++){
-				echo '<td class="root"></td>';
-		
-		}
-		echo "</tr>";
-		
-	}
-
-	//<tr data-tt-id="x.x">
-	function testRootChild($child, $parent_id, $child_id){
-		
-		$child = explode("@",$child);
-		
-		if($parent_id == 0){
-			echo '<tr class="child '.$child[0].'" data-tt-id="'.$child_id.'">';
-				
-				echo '<td class="root">'.$child[0].'</td>';
-				echo '<td class="root">'.$child[1].'</td>';
-				
-				for($index=0; $index < 7; $index++){
-					echo '<td class="root"></td>';
-				}
-			echo '</tr>';
-		}
-		else{
-		
-			echo '<tr class="child '.$child[0].'" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
-					
-				echo '<td class="child">'.$child[0].'</td>';
-				echo '<td class="child">'.$child[1].'</td>';
-				
-				for($index=0; $index < 7; $index++){
-					echo '<td class="child"></td>';
-				}
-			echo '</tr>';
-		}
-	}
-
-	//<tr data-tt-id="x.x.x">
-	function testRootLeaf($leaf, $leaf_ary, $parent_id, $leaf_id){
-		echo '<tr class="leaf'.$leaf.'" data-tt-id="'.$parent_id.'.'.$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
-			
-			echo '<td class="leaf">'.$leaf.'</td>';	
-			
-			foreach($leaf_ary as $leaf=>$data)
-				testRootLeafData($data);
-				
-		echo '</tr>';
-	}
-		
-	// Prints out leaf node data under children of child() function
-	function testRootLeafData($leaf_ary){
-		echo '<td class="leaf"></td>';
-		
-		foreach($leaf_ary as $key=>$value){
-			echo '<td class="leaf">'.$value.'</td>';
-		}
-    }
-	
-	
-	function test_reds_yellows($child_ary, $root_id, $leaf_array){
-		
-		$leaf_id=1;
-	
-		foreach($child_ary as $child=>$leaf_array){
-			//child($child,0,$root_id)
-			testRootChild($child, 0, ++$root_id);
-			
-			$leaf_parent = $root_id;
-			
-			// Set up leaf - Cmp Name + Versions only
-			
-			
-			foreach($leaf_array as $leaf=>$leaf_values){
-			
-				testRootLeaf($leaf, $leaf_values, $leaf_parent ,$leaf_id);	
-				$leaf_id++;
-			}
-				
-			$leaf_id = 1;
-		}
-
-		return $root_id;
-	}
-
 ?>
 
 
