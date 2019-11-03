@@ -95,14 +95,20 @@
 			$released  = $app_stats[0];
 			$in_prog   = $app_stats[1];
 			$cancelled = $app_stats[2];	
+			
+			$total = $released + $in_prog + $cancelled;
+			
+			$released  = ($released / $total) * 100;
+			$in_prog   = ($in_prog / $total) * 100;
+			$cancelled = ($cancelled / $total) * 100;
 		 ?>
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-				['Released', <?php echo $released;?>, "blue"],
-				['In_Progress', <?php echo $in_prog;?>, "green"],	  
-				['Cancelled', <?php echo $cancelled;?>, "grey"]
+				['Released', <?php echo $released;?>, "opacity: 0.8; color: blue"],
+				['In_Progress', <?php echo $in_prog;?>, "opacity: 0.8; color: green"],	  
+				['Cancelled', <?php echo $cancelled;?>, "opacity: 0.8; color: grey"]
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -113,9 +119,33 @@
 			height: 200,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
+			
+			hAxis: {
+				minValue: 0,
+				title: 'Percent',
+				ticks: [0, 25, 50, 75, 100]
+			}
+			
 		};
 		
 		var chart1 = new google.visualization.BarChart(document.getElementById("barchart_values"));
+		
+		function selectHandler() {
+			var selectedItem = chart1.getSelection()[0];
+			
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				
+				value = prepareParam(value);
+				drawTable('app_status' ,value);
+			}
+	
+		}
+		
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart1, 'select', selectHandler);
+		
 		chart1.draw(view, options);
   }
   </script>
@@ -136,16 +166,24 @@
 			$c_pending    = $cmp_stats[2];
 			$c_submitted  = $cmp_stats[3];
 			$c_in_review  = $cmp_stats[4];
+			
+			$total = $c_released + $c_approved + $c_pending + $c_submitted + $c_in_review;
+			
+			$c_released   = ($c_released / $total) * 100;
+			$c_approved   = ($c_approved / $total) * 100;
+			$c_pending    = ($c_pending / $total) * 100;
+			$c_submitted  = ($c_submitted / $total) * 100;
+			$c_in_review  = ($c_in_review / $total) * 100;
 	   ?>  
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-			    ['Released', <?php echo $c_released;?>, "blue"],
-				['Approved', <?php echo $c_approved;?>, "red"],
-				['Pending', <?php echo $c_pending;?> , "Orange"],
-				['Submitted', <?php echo $c_submitted;?>, "Green"],
-				['In Review', <?php echo $c_in_review;?>, "Purple"]
+			    ['Released', <?php echo $c_released;?>, "opacity: 0.8; color: blue"],
+				['Approved', <?php echo $c_approved;?>, "opacity: 0.8; color: red"],
+				['Pending', <?php echo $c_pending;?> , "opacity: 0.8; color: Orange"],
+				['Submitted', <?php echo $c_submitted;?>, "opacity: 0.8; color: Green"],
+				['In Review', <?php echo $c_in_review;?>, "opacity: 0.8; color: Purple"]
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -156,9 +194,32 @@
 			height: 200,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
+			
+			hAxis: {
+				minValue: 0,
+				title: 'Percent',
+				ticks: [0, 25, 50, 75, 100]
+			}
 		};
 		
 		var chart2 = new google.visualization.BarChart(document.getElementById("barchart_values2"));
+		
+			function selectHandler() {
+			var selectedItem = chart2.getSelection()[0];
+			
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				
+				value = prepareParam(value);
+				drawTable('cmp_status' ,value);
+			}
+	
+		}
+		
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart2, 'select', selectHandler);
+
 		chart2.draw(view, options);
   }
   </script>
@@ -177,15 +238,20 @@
 			$r_submitted = $req_stats[0];
 			$r_approved = $req_stats[1];
 			$r_pending = $req_stats[2];
-	  
+			
+			$total = $r_submitted + $r_approved + $r_pending;
+				
+			$r_submitted = ($r_submitted / $total) *100;
+			$r_approved = ($r_approved / $total) * 100;
+			$r_pending = ($r_pending / $total) * 100;
 		?>
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-			    ['Submitted', <?php echo $r_submitted;?>, "Green"],
-				['Approved', <?php echo $r_approved;?>, "Red"],
-				['Pending', <?php echo $r_pending;?>, "Orange"]
+			    ['Submitted', <?php echo $r_submitted;?>, "opacity: 0.8; color: Green"],
+				['Approved', <?php echo $r_approved;?>, "opacity: 0.8; color: Red"],
+				['Pending', <?php echo $r_pending;?>, "opacity: 0.8; color: Orange"]
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -196,9 +262,33 @@
 			height: 200,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
+			
+			hAxis: {
+				minValue: 0,
+				title: 'Percent',
+				ticks: [0, 25, 50, 75, 100]
+			}
 		};
 		
 		var chart3 = new google.visualization.BarChart(document.getElementById("barchart_values3"));
+		
+			function selectHandler() {
+			var selectedItem = chart3.getSelection()[0];
+			
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				
+				value = prepareParam(value);
+				drawTable('request_status' ,value);
+			}
+	
+		}
+
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart3, 'select', selectHandler);
+		
+		
 		chart3.draw(view, options);
   }
   </script>
@@ -218,15 +308,20 @@
 			$rq_review = $req_steps[0];
 			$rq_approval = $req_steps[1];
 			$rq_inspection = $req_steps[2];
+			
+			$total = $rq_review + $rq_approval + $rq_inspection;
+			$rq_review = ($rq_review / $total) * 100;
+			$rq_approval = ($rq_approval / $total) * 100;
+			$rq_inspection = ($rq_inspection / $total) * 100;
 		
 		?>
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-				['Review Step', <?php echo $rq_review;?>, "Purple"],
-				['Approval Step', <?php echo $rq_approval;?>, "Red"],
-				['Inspection Step', <?php echo $rq_inspection;?>, "Slateblue"]
+				['Review Step', <?php echo $rq_review;?>, "opacity: 0.8; color: Purple"],
+				['Approval Step', <?php echo $rq_approval;?>, "opacity: 0.8; color: Red"],
+				['Inspection Step', <?php echo $rq_inspection;?>, "opacity: 0.8; color: Slateblue"]
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -237,12 +332,132 @@
 			height: 200,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
+		    
+			hAxis: {
+				minValue: 0,
+				title: 'Percent',
+				ticks: [0, 25, 50, 75, 100]
+			}
+
 		};
 		
 		var chart4 = new google.visualization.BarChart(document.getElementById("barchart_values4"));
+		
+		function selectHandler() {
+			var selectedItem = chart4.getSelection()[0];
+			
+			if (selectedItem) {
+				var value = data.getValue(selectedItem.row, 0);
+				
+				value = prepareParam(value);
+				drawTable('request_step' ,value);
+			}
+	
+		}
+
+		// Listen for the 'select' event, and call my function selectHandler() when
+		// the user selects something on the chart.
+		google.visualization.events.addListener(chart4, 'select', selectHandler);
+		
 		chart4.draw(view, options);
   }
   </script>
+  
+  
+  
+  <script>
+	
+	function drawTable(object, category){
+		//alert("Drawing the table for "+object);
+		var query_params = object + '/' + category;
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+		
+		if (this.readyState == 4 && this.status == 200) {
+			
+			var myObj = JSON.parse(this.responseText);
+			var table = "";
+			var filtered;			
+			
+			table += '<table id="info" cellpadding="0" cellspacing="0" border="0"'
+				  +  'class="datatable table table-striped table-bordered datatable-style table-hover"'
+				  +  'width="100%" style="width: 100px;">';
+			
+			table += '<caption>'+formatForCaption(object, category)+'</caption>';
+			
+			table += "<thead><tr id=\"table-first-row\"><th>App Id</th> <th>App Name</th> <th>App Version</th>"
+				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
+                  +  "<th>App Status</th> <th>Cmp Status</th>"
+				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
+                  +  "<th>Notes</th> </tr></thead>";
+			
+			table += "<tfoot><tr><th>App Id</th> <th>App Name</th> <th>App Version</th>"
+				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
+                  +  "<th>App Status</th> <th>Cmp Status</th>"
+				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
+                  +  "<th>Notes</th> </tr></tfoot>";
+
+			table += "<tbody>";
+			for(var index = 0; index < myObj.length; index++){
+					
+					table += "<tr>";
+					for(var inner_index = 0; inner_index < myObj[index].length; inner_index++){
+						
+						if(myObj[index][inner_index] == "empty"){
+							table += "<td></td>";
+						}
+						else{
+							table += "<td>" + myObj[index][inner_index] + "</td>";
+						}
+						
+				   }
+				   table += "</tr>";
+				   
+			}
+			table += "</tbody>";
+			table += "</table>";
+			
+			document.getElementById("bar_table").innerHTML = table;
+			
+			}
+		};
+		xmlhttp.open("POST", "db_pichart.php", true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.send(query_params); 
+	}
+	
+	// Convert slice names into database names 
+	function prepareParam(param){
+		
+		param = param.toLowerCase();
+		
+		if(param.includes(" ")){
+			param = param.replace(/\s/g, "_");
+		}
+						
+		return param;	
+	}
+	
+	function formatForCaption(string, category){
+		
+		var converted;
+		
+		if(string == "app_status"){
+			converted = "Application Status - "+category;
+		}else if(string == "cmp_status"){
+			converted = "Component Status - "+category;
+		}else if(string == "request_status"){
+			converted = "Request Status - "+category;
+		}else if(string == "request_step"){
+			converted = "Request Step - "+category;
+		}
+		
+		return converted;
+	}
+	
+	</script>
+  
 <table>
 	<tr>  
 		<td><div id="barchart_values" style="width: 500px; height: 200px;"></div></td>
@@ -255,5 +470,6 @@
 	</tr>
 </table>
 	  
+<div id="bar_table" style="margin-top: 40px"></div>
 	</div>
 </div>
