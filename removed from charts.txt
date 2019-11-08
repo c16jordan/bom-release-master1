@@ -1,0 +1,94 @@
+ <table id="info" cellpadding="0" cellspacing="0" border="0"
+            class="datatable table table-striped table-bordered datatable-style table-hover"
+            width="100%" style="width: 100px;">
+              <thead>
+                <tr id="table-first-row">
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+              <?php
+
+$sql = "SELECT * from sbom ORDER BY app_id ASC;";
+$result = $db->query($sql);
+
+                if ($result->num_rows > 0) {
+                    // output data of each row
+                    while($row = $result->fetch_assoc()) {
+                        echo '<tr>
+                                <td>'.$row["app_id"].'</td>
+                                <td>'.$row["app_name"].' </span> </td>
+                                <td>'.$row["app_version"].'</td>
+                                <td>'.$row["cmp_id"].'</td>
+                                <td>'.$row["cmp_name"].' </span> </td>
+                                <td>'.$row["cmp_version"].'</td>
+                                <td>'.$row["cmp_type"].'</td>
+                                <td>'.$row["app_status"].' </span> </td>
+                                <td>'.$row["cmp_status"].' </span> </td>
+								<td>'.$row["request_id"].' </span> </td>
+								<td>'.$row["request_date"].' </span> </td>
+								<td>'.$row["request_status"].' </span> </td>
+								<td>'.$row["request_step"].' </span> </td>
+                                <td>'.$row["notes"].' </span> </td>
+                            </tr>';
+                    }//end while
+                }//end if
+                else {
+                    echo "0 results";
+                }//end else
+
+                 $result->close();
+                ?>
+
+              </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </tfoot>
+        </table>
+
+		
+		////////////////////
+		
+		
+			<table id="info" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered datatable-style table-hover" width="100%" style="width: 100px;">
+		
+		<thead id="infohead">
+			<tr id="table-first-row"></tr>
+		</thead>
+		
+		<tbody id="infobody"></tbody>
+		
+		<tfoot id="infofoot"></tfoot>
+		
+	</table>

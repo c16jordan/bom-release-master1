@@ -136,14 +136,14 @@
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
-				var table1 = $('#info').DataTable();
+				var table = $('#info').DataTable();
 				
 				resetFilters();
 				
-				table1.column(7).search(value);
-				table1.draw();
+				table.column(7).search(value);
+				table.draw();
 			
-				resetFilters();
+				//resetFilters();
 			}
 	
 		}
@@ -222,7 +222,7 @@
 				table4.column(8).search(value);
 				table4.draw();
 				
-				resetFilters();
+				//resetFilters();
 			}
 	
 		}
@@ -295,7 +295,7 @@
 				table3.column(11).search(value);
 				table3.draw();
 				
-				resetFilters();
+				//resetFilters();
 
 			}
 	
@@ -372,7 +372,7 @@
 				table4.column(12).search(value);
 				table4.draw();
 				
-				resetFilters();
+				//resetFilters();
 			}
 	
 		}
