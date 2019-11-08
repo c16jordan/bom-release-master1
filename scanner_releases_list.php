@@ -36,28 +36,12 @@
                 </tr>
               </thead>
 
-              <tfoot>
-                <tr>
-                        <th>Name</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Open Date</th>
-                        <th>Dependency Date</th>
-                        <th>Content Date</th>
-                        <th>RTM Date(s)</th>
-                        <th>Manager</th>
-                        <th>Author</th>
-                        <th>BOM ID</th>
-                </tr>
-              </tfoot>
-
               <tbody>
 
               <?php
 
-$sql = "SELECT * from releases ORDER BY rtm_date ASC;";
-$result = $db->query($sql);
+				$sql = "SELECT * from releases ORDER BY rtm_date ASC;";
+				$result = $db->query($sql);
 
                 if ($result->num_rows > 0) {
                     // output data of each row
@@ -85,6 +69,22 @@ $result = $db->query($sql);
                 ?>
 
               </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>Name</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Open Date</th>
+                        <th>Dependency Date</th>
+                        <th>Content Date</th>
+                        <th>RTM Date(s)</th>
+                        <th>Manager</th>
+                        <th>Author</th>
+                        <th>BOM ID</th>
+                </tr>
+              </tfoot>
         </table>
 
 

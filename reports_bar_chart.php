@@ -72,8 +72,10 @@
 				}while(mysqli_next_result($db));
 				
              }
-			 mysqli_close($db);
+			 //mysqli_close($db);
 ?>
+
+<script src="jquery-3.4.1.js"></script>
   
   
   <div class="right-content">
@@ -86,7 +88,6 @@
 	  
 	 <script type="text/javascript">
 		// Application Report Bar Chart
-		
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(drawChart);
 			
@@ -135,9 +136,14 @@
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table1 = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('app_status' ,value);
+				resetFilters();
+				
+				table1.column(7).search(value);
+				table1.draw();
+			
+				resetFilters();
 			}
 	
 		}
@@ -209,9 +215,14 @@
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table4 = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('cmp_status' ,value);
+				resetFilters();
+				
+				table4.column(8).search(value);
+				table4.draw();
+				
+				resetFilters();
 			}
 	
 		}
@@ -226,7 +237,7 @@
 
   
   
-  <script type="text/javascript">
+ <script type="text/javascript">
 		// Request Report Bar Chart
 		
 		google.charts.load("current", {packages:["corechart"]});
@@ -277,9 +288,15 @@
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table3 = $('#info').DataTable();
+			
+				resetFilters();
+			
+				table3.column(11).search(value);
+				table3.draw();
 				
-				value = prepareParam(value);
-				drawTable('request_status' ,value);
+				resetFilters();
+
 			}
 	
 		}
@@ -296,7 +313,7 @@
   
   
   
-  <script type="text/javascript">
+ <script type="text/javascript">
 		// Request Step Report Bar Chart
 		
 		google.charts.load("current", {packages:["corechart"]});
@@ -348,9 +365,14 @@
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table4 = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('request_step' ,value);
+				resetFilters();
+				
+				table4.column(12).search(value);
+				table4.draw();
+				
+				resetFilters();
 			}
 	
 		}
@@ -362,103 +384,67 @@
 		chart4.draw(view, options);
   }
   </script>
+    
   
-  
-  
-  <script>
-	
-	function drawTable(object, category){
-		//alert("Drawing the table for "+object);
-		var query_params = object + '/' + category;
-		
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.onreadystatechange = function() {
-		
-		if (this.readyState == 4 && this.status == 200) {
-			
-			var myObj = JSON.parse(this.responseText);
-			var table = "";
-			var filtered;			
-			
-			table += '<table id="info" cellpadding="0" cellspacing="0" border="0"'
-				  +  'class="datatable table table-striped table-bordered datatable-style table-hover"'
-				  +  'width="100%" style="width: 100px;">';
-			
-			table += '<caption>'+formatForCaption(object, category)+'</caption>';
-			
-			table += "<thead><tr id=\"table-first-row\"><th>App Id</th> <th>App Name</th> <th>App Version</th>"
-				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
-                  +  "<th>App Status</th> <th>Cmp Status</th>"
-				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
-                  +  "<th>Notes</th> </tr></thead>";
-			
-			table += "<tfoot><tr><th>App Id</th> <th>App Name</th> <th>App Version</th>"
-				  +	 "<th>Cmp Id</th> <th>Cmp Name</th> <th>Cmp Version</th> <th>Cmp Type</th>"
-                  +  "<th>App Status</th> <th>Cmp Status</th>"
-				  +  "<th>Request Id</th> <th>Request Date</th> <th>Request Status</th> <th>Request Step</th>"
-                  +  "<th>Notes</th> </tr></tfoot>";
+ <script type="text/javascript" language="javascript">
+    $(document).ready( function () {
+        
+        $('#info').DataTable( {
+            dom: 'lfrtBip',
+            buttons: [
+                'copy', 'excel', 'csv', 'pdf'
+            ],
+			ajax: { 
+				url: 'db_chart.php',
+				dataSrc: ''
+			}
+			}
+        );
 
-			table += "<tbody>";
-			for(var index = 0; index < myObj.length; index++){
-					
-					table += "<tr>";
-					for(var inner_index = 0; inner_index < myObj[index].length; inner_index++){
-						
-						if(myObj[index][inner_index] == "empty"){
-							table += "<td></td>";
-						}
-						else{
-							table += "<td>" + myObj[index][inner_index] + "</td>";
-						}
-						
-				   }
-				   table += "</tr>";
-				   
-			}
-			table += "</tbody>";
-			table += "</table>";
-			
-			document.getElementById("bar_table").innerHTML = table;
-			
-			}
-		};
-		xmlhttp.open("POST", "db_pichart.php", true);
-		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlhttp.send(query_params); 
-	}
-	
-	// Convert slice names into database names 
-	function prepareParam(param){
+        $('#info thead tr').clone(true).appendTo( '#info thead' );
+        $('#info thead tr:eq(1) th').each( function (i) {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+    
+        var table = $('#info').DataTable( {
+            orderCellsTop: true,
+            fixedHeader: true,
+            retrieve: true
+        } );
+        
+    } );
+
+</script>
+
+
+
+<script>
+
+	function resetFilters() {
 		
-		param = param.toLowerCase();
+		var table = $('#info').DataTable();
 		
-		if(param.includes(" ")){
-			param = param.replace(/\s/g, "_");
+		for (i = 0; i < 15; i++) {
+			table.column(i).search("");	
 		}
-						
-		return param;	
 	}
-	
-	function formatForCaption(string, category){
-		
-		var converted;
-		
-		if(string == "app_status"){
-			converted = "Application Status - "+category;
-		}else if(string == "cmp_status"){
-			converted = "Component Status - "+category;
-		}else if(string == "request_status"){
-			converted = "Request Status - "+category;
-		}else if(string == "request_step"){
-			converted = "Request Step - "+category;
-		}
-		
-		return converted;
-	}
-	
-	</script>
+
+</script>
+
+<script src="jquery-3.4.1.js"></script>
+
   
-<table>
+<table id="charts">
 	<tr>  
 		<td><div id="barchart_values" style="width: 500px; height: 200px;"></div></td>
 		<td><div id="barchart_values2" style="width: 500px; height: 200px;"></div></td>
@@ -470,6 +456,74 @@
 	</tr>
 </table>
 	  
-<div id="bar_table" style="margin-top: 40px"></div>
-	</div>
+<div id="bar_table" style="margin-top: 40px" width="25%">
+
+  <table id="info" cellpadding="0" cellspacing="0" border="0"
+            class="datatable table table-striped table-bordered datatable-style table-hover"
+            width="100%" style="width: 100px;">
+              <thead>
+                <tr id="table-first-row">
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </thead>
+
+              <tbody>
+			  
+              </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </tfoot>
+        </table>
+
+
 </div>
+
+
+
+
+
+
+
+
+</div>
+
+</div>
+</div>
+
+ <style>
+   tfoot {
+     display: table-header-group;
+   }
+   
+ </style>
+
+<?php include("./footer.php"); ?>
