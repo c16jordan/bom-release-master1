@@ -331,16 +331,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
   
   <body>
     
-	<table class="pies">
+	<table class="pies" width="100%">
 	
 	<tr>
-		<td><div id="piechart1"></div></td>
-		<td><div id="piechart2"></div></td>
+		<td width="50%" id="piechart1"></td>
+		<td width="50%" id="piechart2"></td>
 	</tr>
 	
 	<tr>
-		<td><div id="piechart3"></div></td>
-		<td><div id="piechart4"></div></td>
+		<td width="50%" id="piechart3"></td>
+		<td width="50%" id="piechart4"></td>
 	</tr>
 	
 	</table>

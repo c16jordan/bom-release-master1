@@ -117,7 +117,7 @@
 		var options = {
 			title: "Application Report",
 			width: 500,
-			height: 200,
+			height: 175,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
 			
@@ -197,7 +197,7 @@
 		var options = {
 			title: "Component Report",
 			width: 500,
-			height: 200,
+			height: 175,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
 			
@@ -270,7 +270,7 @@
 		var options = {
 			title: "Request Report",
 			width: 500,
-			height: 200,
+			height: 175,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
 			
@@ -346,7 +346,7 @@
 		var options = {
 			title: "Request Step Report",
 			width: 500,
-			height: 200,
+			height: 175,
 			bar: {groupWidth: "95%"},
 			legend: { position: "none" },
 		    
@@ -444,17 +444,18 @@
 <script src="jquery-3.4.1.js"></script>
 
   
-<table id="charts">
+<table id="charts" width="100%">
 	<tr>  
-		<td><div id="barchart_values" style="width: 500px; height: 200px;"></div></td>
-		<td><div id="barchart_values2" style="width: 500px; height: 200px;"></div></td>
+		<td width="50%"><div id="barchart_values" style="width: 500px; height: 200px;"></div></td>
+		<td width="50%"><div id="barchart_values2" style="width: 500px; height: 200px;"></div></td>
 	</tr>
 	
 	<tr>  
-		<td><div id="barchart_values3" style="width: 500px; height: 200px;"></div></td>
-		<td><div id="barchart_values4" style="width: 500px; height: 200px;"></div></td>
+		<td width="50%"><div id="barchart_values3" style="width: 500px; height: 200px;"></div></td>
+		<td width="50%"><div id="barchart_values4" style="width: 500px; height: 200px;"></div></td>
 	</tr>
 </table>
+	  
 	  
 <div id="bar_table" style="margin-top: 40px" width="25%">
 
