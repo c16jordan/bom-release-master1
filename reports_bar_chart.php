@@ -148,7 +148,7 @@
 	
 		}
 		
-		// Listen for the 'select' event, and call my function selectHandler() when
+		// Listen for the 'select' event, and call the function selectHandler() when
 		// the user selects something on the chart.
 		google.visualization.events.addListener(chart1, 'select', selectHandler);
 		
@@ -227,7 +227,7 @@
 	
 		}
 		
-		// Listen for the 'select' event, and call my function selectHandler() when
+		// Listen for the 'select' event, and call the function selectHandler() when
 		// the user selects something on the chart.
 		google.visualization.events.addListener(chart2, 'select', selectHandler);
 
@@ -301,7 +301,7 @@
 	
 		}
 
-		// Listen for the 'select' event, and call my function selectHandler() when
+		// Listen for the 'select' event, and call the function selectHandler() when
 		// the user selects something on the chart.
 		google.visualization.events.addListener(chart3, 'select', selectHandler);
 		
@@ -377,7 +377,7 @@
 	
 		}
 
-		// Listen for the 'select' event, and call my function selectHandler() when
+		// Listen for the 'select' event, and call the function selectHandler() when
 		// the user selects something on the chart.
 		google.visualization.events.addListener(chart4, 'select', selectHandler);
 		
@@ -507,9 +507,6 @@
 
 
 </div>
-
-
-
 
 
 
