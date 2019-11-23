@@ -46,9 +46,10 @@
                 if ($result->num_rows > 0) {
                     // output data of each row
                     while($row = $result->fetch_assoc()) {
-                        echo '<tr>
+                        // finger pointer - https://stackoverflow.com/questions/8809909/change-cursor-to-finger-pointer
+						echo '<tr>
                                 <td>'.$row["id"].'</td>
-                                <td>'.$row["name"].' </span> </td>
+                                <td><a onclick="window.open(\'bom.php\')" onmouseover="" style="cursor: pointer";>'.$row["name"].' </a></span> </td>
                                 <td>'.$row["type"].'</td>
                                 <td>'.$row["status"].'</td>
                                 <td>'.$row["open_date"].' </span> </td>

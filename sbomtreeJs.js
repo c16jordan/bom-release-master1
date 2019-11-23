@@ -134,7 +134,6 @@
 						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
 						redYellowTree.setAttribute("style", "visibility: hidden");
 						YellowTree.setAttribute("style", "visibility: hidden");
-						//trees.insertBefore(redTree,redYellowTree);
 						reInsertElement(trees,redTree);
 						redTree.setAttribute("style", "visibility:visible");
 						
@@ -166,7 +165,6 @@
 						
 						redTree.setAttribute("style", "visibility:hidden");
 						YellowTree.setAttribute("style", "visibility: hidden");
-						//trees.insertBefore(redYellowTree, redTree);
 						reInsertElement(trees,redYellowTree);
 						redYellowTree.setAttribute("style", "visibility: visible");
 						
