@@ -46,10 +46,10 @@
                 if ($result->num_rows > 0) {
                     // output data of each row
                     while($row = $result->fetch_assoc()) {
-                        // finger pointer - https://stackoverflow.com/questions/8809909/change-cursor-to-finger-pointer
+                        // finger pointer icon - https://stackoverflow.com/questions/8809909/change-cursor-to-finger-pointer
 						echo '<tr>
                                 <td>'.$row["id"].'</td>
-                                <td><a onclick="window.open(\'bom.php\')" onmouseover="" style="cursor: pointer";>'.$row["name"].' </a></span> </td>
+                                <td><a onmouseover="" style="cursor: pointer";>'.$row["name"].' </a></span> </td>
                                 <td>'.$row["type"].'</td>
                                 <td>'.$row["status"].'</td>
                                 <td>'.$row["open_date"].' </span> </td>
@@ -124,7 +124,23 @@
 
 </script>
 
-        
+ 
+ 
+<script>
+
+	$(document).ready(function(){
+		$("a").click(function(){
+			
+			var app_name = $(this).html();
+
+			// https://stackoverflow.com/questions/2367594/open-url-while-passing-post-data-with-jquery
+			$.post("save.php",{'name': app_name});
+			window.open('bom.php');
+		});
+	});
+
+</script>
+
 
  <style>
    tfoot {
