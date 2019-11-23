@@ -1,5 +1,5 @@
 <?php
-	static $nodes;
+
 	// Gather data for tree in four dimensions [root info][child info][leaf info][leaf data]
 	function callDB($db){
 	
@@ -59,14 +59,58 @@
 			
 	}
 	
-
-	// Echo out the tree with php either as Reds(false) or redsYellows(true)
-	function phpMakeTree($db, $ry=false){
+	/* 
+	
+	    getNodes()
+			$echo flag determines what type of get is applied: 
+				True - "get" the nodes during the table construction and add them to the nodes list, 
+				False - "get" the nodes from the $nodes list
+			
+			Returns: an array of node id values
+	*/
+	
+	function getNodes($node="", $tree=1 ,$echo=false){
+		
+		static $nodes;
+		static $nodes2;
+		
+		if($echo){
+			
+			if($tree === 1){
+				$nodes .= $node."@";
+			}
+		
+			else if($tree === 2){
+				$nodes2 .= $node."@";
+			}
+		}		
+		else{
+			// Trim off extra "@" delimeter and return the array of values
+			if($tree === 1){
+				$pos = strripos($nodes,"@");
+				$nodes = substr($nodes, 0, $pos);
+				echo json_encode(explode('@', $nodes));
+			}
+			else if($tree === 2){
+				$pos = strripos($nodes2,"@");
+				$nodes2 = substr($nodes2, 0, $pos);
+				echo json_encode(explode('@', $nodes2));
+			}
+		}
+	}
+	
+	// Echo out the tree with php either as Reds(ry=false), redsYellows(ry=true) or yellows y = true
+	function phpMakeTree($db, $ry=false, $y=false){
 			
 			$root_id=1;
 			$child_id = 1;
 			$leaf_id = 1;
-		
+			$tree_switch = 1;
+			
+			if($ry){
+				$tree_switch = 2;
+			}
+			
 			$bom_ary = callDB($db);
 		
 			ksort($bom_ary);
@@ -76,13 +120,15 @@
 			
 				$leaf_array;
 				
-				root($base, $root_id);
+				if(!$y){
+					root($base, $tree_switch, $root_id);
+				}
 				
 				// Set up root - App names + Versions only
 				foreach($root_ary as $root=>$cmp_array){
 					
 					$leaf_array = $cmp_array;
-					child($root, $root_id, $child_id);
+					child($root, $tree_switch, $root_id, $child_id);
 				
 					$child_parent = $root_id.'.'.$child_id;
 				
@@ -99,7 +145,7 @@
 				}
 				
 				if($ry){
-					$root_id = redsYellows($root_ary, $root_id, $leaf_array);
+					$root_id = redsYellows($root_ary, $tree_switch, $root_id, $leaf_array);
 				}
 				
 				$child_id = 1;
@@ -109,8 +155,9 @@
 		}
 
 	// Print out the root nodes - <tr data-tt-id="x">
-	function root($root, $id){
+	function root($root, $tree_switch, $id){
 
+		//getNodes($id, $tree_switch, true);
 		echo '<tr class="'.strToLower($root).'" data-tt-id="'.$id.'">';
 		echo '<td class="root">'.$root.'</td>';
 		
@@ -123,12 +170,12 @@
 	}
 
 	// Print out the child nodes - <tr data-tt-id="x.x">
-	function child($child, $parent_id, $child_id){
+	function child($child, $tree_switch, $parent_id, $child_id){
 		
 		$child = explode("@",$child);
 		
 		if($parent_id == 0){
-			$nodes[] = $child_id;
+			//getNodes($child_id, $tree_switch, true);
 			echo '<tr class="child '.strToLower($child[0]).'" data-tt-id="'.$child_id.'">';
 				
 				echo '<td class="root">'.$child[0].'</td>';
@@ -140,7 +187,7 @@
 			echo '</tr>';
 		}
 		else{
-			$nodes[] = $parent_id.'.'.$child_id;
+			//getNodes($parent_id.'.'.$child_id, $tree_switch, true);
 			echo '<tr class="child '.strToLower($child[0]).'" data-tt-id="'.$parent_id.'.'.$child_id.'" data-tt-parent-id="'.$parent_id.'">';
 					
 				echo '<td class="child">'.$child[0].'</td>';
@@ -176,13 +223,13 @@
 	
 	// Print out the children nodes as root nodes after their corresponding root node. 
 	// Leaf nodes are still leaf nodes.
-	function redsYellows($child_ary, $root_id, $leaf_array){
+	function redsYellows($child_ary, $tree_switch, $root_id, $leaf_array){
 		
 		$leaf_id=1;
 	
 		foreach($child_ary as $child=>$leaf_array){
 
-			child($child, 0, ++$root_id);
+			child($child, $tree_switch, 0, ++$root_id);
 			
 			$leaf_parent = $root_id;
 			

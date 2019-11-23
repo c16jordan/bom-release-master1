@@ -20,23 +20,42 @@
 		 */
 		
 		$(document).ready(function(){
-				$("#expand, #expand2").click(function(){				
-					$(active).treetable('expandAll');
-					//alert("Expand");
+				$("#expand, #expand2, #expand3").click(function(){				
+			
+				/*	
+				var length = node_array.length;
+				var length2 = node_array2.length;
+				
+				if(active === "#sbom_tree"){
+					for(var index = 0; index < length; index++){
+						console.log(node_array[index]);
+						$(active).treetable('expandNode', node_array[index]);
+					}
+				}
+				else if(active === "#sbom_tree2"){
+					
+					for(var index = 0; index < length2; index++){
+						console.log(node_array2[index]);
+						$(active).treetable('expandNode', node_array2[index]);
+					}
+				}
+				*/
+				$(active).treetable('expandAll');
+				//alert("Expand");
 					
 				});
 		});
 		
 
 		$(document).ready(function(){
-				$("#collapse, #collapse2").click(function(){
+				$("#collapse, #collapse2, #collapse3").click(function(){
 					$(active).treetable('collapseAll');
 					//alert("Collapse");
 				});
 		});
 	
 		$(document).ready(function(){
-				$("#where_button, #where_button2").click(function(){
+				$("#where_button, #where_button2, #where_button3").click(function(){
 					
 					var which;
 					
@@ -45,6 +64,9 @@
 					}
 					else if(active==="#sbom_tree2"){
 							which = "where_used2";
+					}
+					else if(active==="#sbom_tree3"){
+							which = "where_used3";
 					}
 					
 					var value = document.getElementById(which).value;
@@ -57,7 +79,7 @@
 		});
 	
 		$(document).ready(function(){
-				$("#where_used, #where_used2").keydown(function(event){
+				$("#where_used, #where_used2, #where_used3").keydown(function(event){
 					$key_pressed = event.which;
 					if($key_pressed == 13){
 						
@@ -67,6 +89,9 @@
 							which = "where_used";
 						}else if(active==="#sbom_tree2"){
 							which = "where_used2";
+						}
+						else if(active==="#sbom_tree3"){
+							which = "where_used3";
 						}
 						
 						var value = document.getElementById(which).value;
@@ -87,28 +112,33 @@
 		var highlighted;
 		var reds = true; // Flag to verify reds class active
 		var reds_yellows = false;	// Flag to verify reds_yellow class active
+		var yellows = false;	// Flag to verify yellow class active
 		var colors = false;
 
 		
-		var reds_toggle = 0;
+		//var reds_toggle = 0;
 		
 		$(document).ready(function(){
-				$("#reds, #reds2").click(function(){
+				$("#reds, #reds2, #reds3").click(function(){
 					
 					if(!reds){
 						reds_yellows = false;
 						reds = true;
-						
-						active = "#sbom_tree";
-					
+						yellows = false;
+											
 						var trees = document.getElementById("tables");
 						var redTree = document.getElementById("sbom_tree");
 						var redYellowTree = document.getElementById("sbom_tree2");
+						var YellowTree = document.getElementById("sbom_tree3");
 						
 						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
 						redYellowTree.setAttribute("style", "visibility: hidden");
-						trees.insertBefore(redTree,redYellowTree);
-						redTree.setAttribute("style", "visibility:");
+						YellowTree.setAttribute("style", "visibility: hidden");
+						//trees.insertBefore(redTree,redYellowTree);
+						reInsertElement(trees,redTree);
+						redTree.setAttribute("style", "visibility:visible");
+						
+						active = "#sbom_tree";
 					}
 				});
 				
@@ -116,32 +146,66 @@
 		});
 		
 
-		var reds_yellows_toggle = 0;
+//		var reds_yellows_toggle = 0;
 
 		$(document).ready(function(){
-				$("#red_yellow, #red_yellow2").click(function(){
+				$("#red_yellow, #red_yellow2, #red_yellow3").click(function(){
 					
 					if(!reds_yellows){
 						
 						reds_yellows = true;
 						reds = false;
-						
-						active = "#sbom_tree2";
-						
+						yellows = false;
+										
 						var trees = document.getElementById("tables");
 						var redTree = document.getElementById("sbom_tree");
 						var redYellowTree = document.getElementById("sbom_tree2");
+						var YellowTree = document.getElementById("sbom_tree3");
 	
 						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
-						redTree.setAttribute("style", "visibility: hidden");
-						trees.insertBefore(redYellowTree,redTree);
+						
+						redTree.setAttribute("style", "visibility:hidden");
+						YellowTree.setAttribute("style", "visibility: hidden");
+						//trees.insertBefore(redYellowTree, redTree);
+						reInsertElement(trees,redYellowTree);
 						redYellowTree.setAttribute("style", "visibility: visible");
+						
+						active = "#sbom_tree2";
+						
 					}
 				});
 		});
 		
 		$(document).ready(function(){
-				$("#colorize, #colorize2").click(function(){			
+				$("#yellows, #yellows2, #yellows3").click(function(){
+					
+					if(!yellows){
+						
+						yellows = true;
+						reds_yellows = false;
+						reds = false;
+															
+						var trees = document.getElementById("tables");
+						var redTree = document.getElementById("sbom_tree");
+						var redYellowTree = document.getElementById("sbom_tree2");
+						var YellowTree = document.getElementById("sbom_tree3");
+						
+						//<DOM object>.replaceChild() https://www.w3schools.com/jsref/met_node_replacechild.asp
+						redYellowTree.setAttribute("style", "visibility: hidden");
+						redTree.setAttribute("style", "visibility:hidden");
+						reInsertElement(trees,YellowTree);
+						YellowTree.setAttribute("style", "visibility: visible");
+						
+						active = "#sbom_tree3";
+					}
+				});
+				
+		
+		});
+		
+		
+		$(document).ready(function(){
+				$("#colorize, #colorize2, #colorize3").click(function(){			
 
 											
 				var root_nodes = document.getElementsByClassName("root");
@@ -167,6 +231,21 @@
 					
 				});
 		});
+			
+			
+			function getCurrentElement(){
+				var current = active.substring(1,active.length);
+				return document.getElementById(current);
+			}
+			
+			function reInsertElement(container, toInsert){
+				var current = getCurrentElement();
+				console.log(current);
+				console.log(toInsert);
+				container.insertBefore(toInsert, current);
+			}
+			
+			
 			
 			function removeColor(node_list, class_name){				
 				
@@ -218,6 +297,9 @@
 				}
 				else if(active === "#sbom_tree2"){
 					which = "sbom_tree2";
+				}
+				else if(active === "#sbom_tree3"){
+					which = "sbom_tree3";
 				}
 				
 				highlighted = document.getElementById(which).getElementsByClassName("highlight_node");
