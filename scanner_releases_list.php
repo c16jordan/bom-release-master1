@@ -49,7 +49,7 @@
                         // finger pointer icon - https://stackoverflow.com/questions/8809909/change-cursor-to-finger-pointer
 						echo '<tr>
                                 <td>'.$row["id"].'</td>
-                                <td><a onmouseover="" style="cursor: pointer";>'.$row["name"].' </a></span> </td>
+                                <td><a class="bomLink" onmouseover="" style="cursor: pointer";>'.$row["name"].'</a></span> </td>
                                 <td>'.$row["type"].'</td>
                                 <td>'.$row["status"].'</td>
                                 <td>'.$row["open_date"].' </span> </td>
@@ -129,7 +129,7 @@
 <script>
 
 	$(document).ready(function(){
-		$("a").click(function(){
+		$(".bomLink").click(function(){
 			
 			var app_name = $(this).html();
 

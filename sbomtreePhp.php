@@ -1,14 +1,16 @@
 <?php
 
 	// Gather data for tree in four dimensions [root info][child info][leaf info][leaf data]
-	function callDB($db){
+	function callDB($db, $sql=""){
 	
-		$sql = "SELECT app_name, app_version, app_status, 
+		if($sql === ""){
+			$sql = "SELECT app_name, app_version, app_status, 
 					cmp_name, cmp_version, cmp_type, cmp_status,
 					request_id, request_date, request_status, request_step,
 					notes 
-				FROM sbom";
-			
+					FROM sbom";
+		}
+		
 		$result = $db->query($sql);
 	
 	
@@ -36,7 +38,7 @@
             }
          }
          else {
-            echo "0 results";
+            return false;
          }
 		 
 		$result->close();
@@ -100,7 +102,7 @@
 	}
 	
 	// Echo out the tree with php either as Reds(ry=false), redsYellows(ry=true) or yellows y = true
-	function phpMakeTree($db, $ry=false, $y=false){
+	function phpMakeTree($db, $ry=false, $y=false, $sql=""){
 			
 			$root_id=1;
 			$child_id = 1;
@@ -111,47 +113,52 @@
 				$tree_switch = 2;
 			}
 			
-			$bom_ary = callDB($db);
-		
-			ksort($bom_ary);
-		
-			// Set up base - App names only
-			foreach($bom_ary as $base=>$root_ary){
+			$bom_ary = callDB($db, $sql);
 			
-				$leaf_array;
+			if($bom_ary !== false){
+			
+				ksort($bom_ary);
+		
+				// Set up base - App names only
+				foreach($bom_ary as $base=>$root_ary){
+			
+					$leaf_array;
 				
-				if(!$y){
-					root($base, $tree_switch, $root_id);
-				}
-				
-				// Set up root - App names + Versions only
-				foreach($root_ary as $root=>$cmp_array){
-					
-					$leaf_array = $cmp_array;
-					child($root, $tree_switch, $root_id, $child_id);
-				
-					$child_parent = $root_id.'.'.$child_id;
-				
-					// Set up component - Cmp Name + Versions only
-					foreach($cmp_array as $child=>$cmp_values){
-				
-						leaf($child, $cmp_values, $child_parent ,$leaf_id);	
-						$leaf_id++;
+					if(!$y){
+						root($base, $tree_switch, $root_id);
 					}
+				
+					// Set up root - App names + Versions only
+					foreach($root_ary as $root=>$cmp_array){
+					
+						$leaf_array = $cmp_array;
+						child($root, $tree_switch, $root_id, $child_id);
+				
+						$child_parent = $root_id.'.'.$child_id;
+				
+						// Set up component - Cmp Name + Versions only
+						foreach($cmp_array as $child=>$cmp_values){
+				
+							leaf($child, $cmp_values, $child_parent ,$leaf_id);	
+							$leaf_id++;
+						}
 					
 					
-					$leaf_id = 1;
-					$child_id++;
-				}
+						$leaf_id = 1;
+						$child_id++;
+					}
 				
-				if($ry){
-					$root_id = redsYellows($root_ary, $tree_switch, $root_id, $leaf_array);
-				}
+					if($ry){
+						$root_id = redsYellows($root_ary, $tree_switch, $root_id, $leaf_array);
+					}
 				
-				$child_id = 1;
-				$root_id++;
+					$child_id = 1;
+					$root_id++;
+				}
 			}
-
+			else{ 
+				return false;
+			}
 		}
 
 	// Print out the root nodes - <tr data-tt-id="x">
