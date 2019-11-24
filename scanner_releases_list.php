@@ -120,6 +120,18 @@
             retrieve: true
         } );
         
+		table.on( 'draw', function () {
+
+			$(".bomLink").click(function(){
+			var app_name = $(this).html();
+
+			// https://stackoverflow.com/questions/2367594/open-url-while-passing-post-data-with-jquery
+			$.post("save.php",{'name': app_name});
+			window.open('bom.php');
+			
+			});
+		});
+		
     } );
 
 </script>
@@ -127,10 +139,11 @@
  
  
 <script>
-
+// Problem - css on A tags does not apply past first page - you must apply jquery click event on table redraw
+//https://stackoverflow.com/questions/38005422/click-event-only-works-on-the-first-page-when-combined-with-jquery-datatables-w
 	$(document).ready(function(){
 		$(".bomLink").click(function(){
-			
+			//alert("CLICKED");
 			var app_name = $(this).html();
 
 			// https://stackoverflow.com/questions/2367594/open-url-while-passing-post-data-with-jquery
@@ -139,6 +152,10 @@
 		});
 	});
 
+	   var table = $('#info').DataTable;
+	   
+
+	
 </script>
 
 
