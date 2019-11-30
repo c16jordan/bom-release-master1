@@ -1,45 +1,8 @@
 		var active = "#sbom_tree";
-		/* var roots = document.getElementsByClassName('root');
-		var chldrn = document.getElementsByClassName('child');
-		var expandNodes = [];
-		var e_index = 0;
-		
-		$(document).ready(function(){
-						
-					var root_list = Array.from(roots);
-					var child_list = Array.from(chldrn);
-					
-					if(length > 0){						
-						
-						for(var exist_index = 0; exist_index < node_list.length; exist_index++){				
-							expandNodes[] = root_list[exist_index].getAttribute("data-tt-id");
-						}						
-						
-					}
-		});
-		 */
 		
 		$(document).ready(function(){
 				$("#expand, #expand2, #expand3").click(function(){				
-			
-				/*	
-				var length = node_array.length;
-				var length2 = node_array2.length;
-				
-				if(active === "#sbom_tree"){
-					for(var index = 0; index < length; index++){
-						console.log(node_array[index]);
-						$(active).treetable('expandNode', node_array[index]);
-					}
-				}
-				else if(active === "#sbom_tree2"){
-					
-					for(var index = 0; index < length2; index++){
-						console.log(node_array2[index]);
-						$(active).treetable('expandNode', node_array2[index]);
-					}
-				}
-				*/
+
 				$(active).treetable('expandAll');
 				//alert("Expand");
 					
@@ -68,9 +31,9 @@
 					else if(active==="#sbom_tree3"){
 							which = "where_used3";
 					}
-					
+
+
 					var value = document.getElementById(which).value;
-				
 						value = formatInput(value);
 						selectElement(value, active);
 					
@@ -93,9 +56,10 @@
 						else if(active==="#sbom_tree3"){
 							which = "where_used3";
 						}
-						
+					
+	
 						var value = document.getElementById(which).value;
-						
+
 						value = formatInput(value);
 						selectElement(value, active);
 						
@@ -203,7 +167,7 @@
 		
 		
 		$(document).ready(function(){
-				$("#colorize, #colorize2, #colorize3").click(function(){			
+				$("#colorize, #colorize2, #colorize3, #colorize_r").click(function(){			
 
 											
 				var root_nodes = document.getElementsByClassName("root");
@@ -299,17 +263,17 @@
 				else if(active === "#sbom_tree3"){
 					which = "sbom_tree3";
 				}
-				
+
 				highlighted = document.getElementById(which).getElementsByClassName("highlight_node");
 				
 				removeHighlighted(highlighted);
 										
 				results	= document.getElementById(which).getElementsByClassName(target);
-	
+	//console.log(results.length);
 				for(var result_index = 0; result_index < results.length; result_index++){
 					
 					var node = (results[result_index].getAttribute("data-tt-id"));
-				
+					alert(active);
 					$(active).treetable("reveal", node);
 					
 					children = results[result_index].children;

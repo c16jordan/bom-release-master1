@@ -15,18 +15,12 @@
  <link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
  <link rel="stylesheet" type="text/css" href="mycss.css">
  <script src="jquery-3.4.1.js"></script>
-  
+ <script src="sbomtreeJs.js"></script>
   
 <div class="right-content">
     <div class="container">
 
       <h3 style = "color: #01B0F1;">Scanner -> Releases Bom</h3>
-
-		<?php //echo $_SESSION['name']; 
-		
-		
-			
-		?>
 		
 		<table id="sbom_tree">
  
@@ -35,10 +29,10 @@
 		<caption>
 			<button id="expand" style="font-size: 10px">Expand All</button>
 			<button id="collapse" style="font-size: 10px">Collapse All</button>
-			<button id="colorize" style="font-size: 10px"> Toggle Color </button>
-			<button id="reds" style="font-size: 10px">Reds</button>
-			<button id="yellows" style="font-size: 10px">Yellows</button>
-			<button id="red_yellow" style="font-size: 10px"> Reds and Yellows </button>
+			<button id="colorize_r" style="font-size: 10px"> Toggle Color </button>
+			<button id="reds_r" style="font-size: 10px">Reds</button>
+			<button id="yellows_r" style="font-size: 10px">Yellows</button>
+			<button id="red_yellow_r" style="font-size: 10px"> Reds and Yellows </button>
 			<button id="where_button" style="font-size: 10px; margin-left:25px">Where used</button>
 		
 			<input id="where_used" type="text" placeholder="name;[version id] option"></input>

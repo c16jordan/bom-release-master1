@@ -3,8 +3,7 @@
   require_once('initialize.php');
   global $db;
 
-	// Insert child nodes into child array, remove from leaf($cmp_ary) array
-	function fillChildAry(&$bom_ary, &$cmp_ary, &$child_ary){
+	function fillChildAry($bom_ary, $cmp_ary, $child_ary){
 			
 			foreach($bom_ary as $rc=>$chlf_ary){
 			
@@ -15,56 +14,9 @@
 				
 				}
 			}
+		return $child_ary;
 	}
   
-    
-	// Remove child nodes from RED tree array
-	function removeChldrn(&$bom_ary, $child_ary){
-				
-		foreach($bom_ary as $rc=>$chlf_ary){
-			
-			if(array_key_exists($rc, $child_ary)){
-				unset($bom_ary[$rc]);		
-			}
-			
-		}
-		
-	}
-  
-  
-	function finishTree(&$bom_ary, $child_ary){
-		
-		foreach($bom_ary as $rc=>$chlf_ary){
-
-			foreach($chlf_ary as $cl=>$data){
-				
-				$bom_ary[$rc][$cl] = updateChild($cl, $data, $child_ary);
-				
-			}
-			
-			
-		}
-		
-		
-	}
-  
-	function updateChild($node_name, &$node, $child_ary){
-		//print_r($node);echo "<br/>";
-		// Do recursive bit here
-		if(array_key_exists($node_name, $child_ary)){
-			//$node = $child_ary[$node_name];
-			$node = $child_ary[$node_name];		
-
-			//not sure if correct
-			foreach($node as $key=>$data){
-				if($key === "chldrn"){
-					$node[$key] = updateChild($key, $data, $child_ary);
-				}
-			}
-		}
-		
-		return $node;	
-	}
   
 	// Gather data for tree in four dimensions [root info][child info][leaf info][leaf data]
 	function callDB($db, $sql=""){
@@ -93,6 +45,13 @@
 			
             }
          }
+	
+		//echo "<pre>";
+		//print_r($cmp_ary);
+		//echo "<pre>";
+	
+		//$key = "Jquery 4.3";
+		//echo array_key_exists($key, $cmp_ary);
 	
 		// End DB1 call
 	
@@ -136,20 +95,88 @@
 		 
 		$result->close();
 	 
-		
+	 
 		// Build array with children nodes to be subbed for children nodes in main bom tree array
-		fillChildAry($bom_ary, $cmp_ary, $child_ary);
-		removeChldrn($bom_ary, $child_ary);
-		finishTree($bom_ary, $child_ary);
+		$child_ary = fillChildAry($bom_ary, $cmp_ary, $child_ary);
 		
-		//echo "<pre>";
-		//echo "Cmp ";
+		
+		echo "<pre>";
+		echo "Cmp ";
 		//print_r($cmp_ary);
-		//echo "Child ";
-		//print_r($child_ary);
+		print_r($child_ary);
+		echo "</pre>";
+		
+		
+		// Remove child nodes from RED tree array
+		foreach($bom_ary as $rc=>$chlf_ary){
+			
+			if(array_key_exists($rc, $cmp_ary)){
+				unset($bom_ary[$rc]);
+				//print_r($cmp_ary);				
+			}
+			
+		}
+		
+		
+		// Copy root-child data from cmp array into bom array to complete RED tree
+		foreach($bom_ary as $rc=>$chlf_ary){
+			
+			foreach($chlf_ary as $root=>$cmp){
+							
+				if(array_key_exists($root, $cmp_ary)){
+						
+						//echo "<pre>";
+						//echo $root;
+						//print_r($cmp);
+						//echo "</pre>";
+						$bom_ary[$rc][$root] = $cmp_ary[$root];
+				}
+	
+			}
+			
+				
+				//echo "<pre>";
+				//echo $rc;
+				//print_r($cmp_ary[$rc]);
+				//echo "</pre>";
+			
+		}
+		
+				//echo "<pre>";
+				//print_r($cmp_ary);
+				//echo "</pre>";
+		//echo "<pre>";
+		
+		/*
+		foreach($bom_ary as $key=>$chlf){
+						
+			foreach($chlf as $clkey=>$data){
+			
+				if(array_key_exists($clkey, $child_ary)){
+
+					$bom_ary[$key][$clkey]["child_flag"] = true;
+					//if ["child_flag"] array_slice(<$array_name>, "child_flag");
+					$bom_ary[$key][$clkey] = $child_ary[$clkey];
+				}
+				else{
+					// Do we check for duplicates or should they all be unique and not need to be checked?
+					// The database needs to be updated to reflect newer version on DB_Layer 2.4 for QM2.2
+				
+					//echo $key."<br>";
+				}
+			}			
+		
+		}
+		
+
+	
+		
+	*/
+		//return $bom_ary;
+		//echo "<pre>";
 		//print_r($bom_ary);
+		//print_r($cmp_ary);
 		//echo "</pre>";
-		return $bom_ary;
 	}
 		
 	// Set up the columns by name
@@ -215,41 +242,35 @@
 				ksort($bom_ary);
 		
 				// Set up base - App names only
-				foreach($bom_ary as $root=>$root_ary){
+				foreach($bom_ary as $base=>$root_ary){
 			
 					$leaf_array;
 				
-					// Echo out root node data
-					root($root, $tree_switch, $root_id);
+					root($base, $tree_switch, $root_id);
 					
-					
+				/*	
 					// Set up root - App names + Versions only
-					foreach($root_ary as $cmp=>$cmp_array){
-						//echo $cmp."<br/>";
-						//echo "<pre>";
-			//			//print_r($cmp_array);
-						//echo "</pre>";
+					foreach($root_ary as $root=>$cmp_array){
 						
 						$leaf_ary = $cmp_array;
 					
-						if(array_key_exists("chldrn", $cmp_array)){
-							//unset($cmp_array["child_flag"]);
-							child($cmp, $tree_switch, $root_id, $child_id, $cmp_array, $leaf_id);
-							//unset($cmp_array[0]);
-							//unset($cmp_array[1]);
+						if(array_key_exists("child_flag", $cmp_array)){
+							unset($cmp_array["child_flag"]);
+							child($root, $tree_switch, $root_id, $child_id, $cmp_array);
+							unset($cmp_array[0]);
+							unset($cmp_array[1]);
 							$child_id++;
 						}
-						else{
-							leaf($cmp, $cmp_array["specs"], $root_id, $child_id);
-						}
-		
+				
+						$child_parent = $root_id.'.'.$child_id;
+						
+						leaf($root, $cmp_array, $root_id, $child_id);
 				
 						$leaf_id = 1;
 						$child_id++;
-						
 					
 					}
-				
+				*/
 				/*
 					if($ry){
 						$root_id = redsYellows($root_ary, $tree_switch, $root_id, $leaf_array);
@@ -286,41 +307,32 @@
 	}
 
 	// Print out the child nodes - <tr data-tt-id="x.x">
-	function child($child, $tree_switch, $parent_id, $child_id, $cmp_ary, $leaf_id){
-		
+	function child($child, $tree_switch, $parent_id, $child_id, $cmp_ary){
+
+		$child_data = explode("@",$child);
+		$name_ver = explode(" ", $child_data[0]);
 		$chld_id = $parent_id.'.'.$child_id;
-		//echo "<pre>";
-		//print_r($cmp_ary);
-		//echo "<br/></pre>";
-	
-		if(array_key_exists("chldrn", $cmp_ary)){			
-			
-			$child_data = explode("@",$child);
-			$name_ver = explode(" ", $child_data[0]);
-			
-
-			echo '<tr class="child '.strToLower($child_data[0]).'" data-tt-id="'.$chld_id.'" data-tt-parent-id="'.$parent_id.'">';
+		
+			//getNodes($parent_id.'.'.$child_id, $tree_switch, true);
+		echo '<tr class="child '.strToLower($child_data[0]).'" data-tt-id="'.$chld_id.'" data-tt-parent-id="'.$parent_id.'">';
 					
-			echo '<td class="child">'.$name_ver[0].'</td>';
-			echo '<td >'.$name_ver[1].'</td>';
-			//echo '<td >'.$child_data[1].'</td>';
+		echo '<td class="child">'.$name_ver[0].'</td>';
+		echo '<td >'.$name_ver[1].'</td>';
+		//echo '<td >'.$child_data[1].'</td>';
 		
-			for($index=0 ;$index < 4; $index++){
-				echo '<td>'.$cmp_ary["specs"][$index].'</td>';
-			}
-			echo '</tr>';
+		for($index=0 ;$index < 4; $index++){
+			echo '<td>'.$cmp_ary[0][$index].'</td>';
+		}
+		echo '</tr>';
 		
-			foreach($cmp_ary["chldrn"] as $chlf=>$data){
-				child($chlf, $tree_switch, $parent_id, $child_id, $data, $leaf_id);
-				$leaf_id++;
-			}
+		
+		$leaf_id=1;
 
-		}
-		else{
-				leaf($child,$cmp_ary["specs"],$chld_id,$leaf_id, 1);
-		}
-
+		foreach($cmp_ary[1] as $leaf=>$l_data){
+			leaf($leaf,$l_data,$chld_id,$leaf_id, 1);
 			
+			$leaf_id++;
+		}
 		
 		$leaf_id=1;
 		
@@ -329,7 +341,8 @@
 
 	// Print out the leaf nodes - <tr data-tt-id="x.x.x">
 	function leaf($leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
-
+		
+		if($child_flag === 1){
 			$leaf_data = explode("@", $leaf);
 			$name_ver = explode(" ", $leaf_data[0]);
 		
@@ -338,19 +351,33 @@
 			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
 			echo '<td ">'.$name_ver[1].'</td>';	
 			
-			leafData($leaf_ary);
-			
+			foreach($leaf_ary as $leaf=>$data){
+				leafData($data);
+			}
 			echo '</tr>';		
+		}
+		else{
+			$leaf_data = explode("@", $leaf);
+			$name_ver = explode(" ", $leaf_data[0]);
 		
+			echo '<tr class="'.strToLower($leaf_data[0]).'" data-tt-id="'.$parent_id.'.'.$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
+			
+			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
+			echo '<td ">'.$name_ver[1].'</td>';	
+			
+			foreach($leaf_ary as $leaf=>$data){
+				leafData($data);
+			}
+			echo '</tr>';		
+		}
 	}
 		
 	// Prints out leaf node data under children of child() function
 	function leafData($leaf_ary){
-
+		
 		foreach($leaf_ary as $key=>$value){
 			echo '<td>'.$value.'</td>';
 		}
-		
     }
 	
 	// Print out the children nodes as root nodes after their corresponding root node. 
