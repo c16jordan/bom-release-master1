@@ -263,6 +263,10 @@
 				//print_r($child_ary);
 				//echo "</pre>";
 				
+				if($ry){
+					$child_id = $root_id;
+				}
+				
 				foreach($child_ary as $cmp=>$cmp_array){
 
 						$leaf_ary = $cmp_array;
@@ -369,9 +373,11 @@
 					
 			echo '<td class="root">'.$name_ver[0].'</td>';
 			echo '<td >'.$name_ver[1].'</td>';
+			echo '<td >'.$child_data[1].'</td>';
+		
 		
 			for($index=0 ;$index < 4; $index++){
-				echo '<td>'.$cmp_ary["specs"][$index].'</td>';
+				echo '<td></td>';
 			}
 			echo '</tr>';
 	
@@ -435,7 +441,7 @@
 			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
 			echo '<td ">'.$name_ver[1].'</td>';	
 			
-			//leafData($leaf_ary);
+			leafData($leaf_ary);
 			
 			echo '</tr>';		
 		
