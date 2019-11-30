@@ -3,6 +3,9 @@
   require_once('initialize.php');
   global $db;
 
+  $child_ary = []; // Store the children nodes
+  
+  
 	// Insert child nodes into child array, remove from leaf($cmp_ary) array
 	function fillChildAry(&$bom_ary, &$cmp_ary, &$child_ary){
 			
@@ -49,10 +52,9 @@
 	}
   
 	function updateChild($node_name, &$node, $child_ary){
-		//print_r($node);echo "<br/>";
-		// Do recursive bit here
+
 		if(array_key_exists($node_name, $child_ary)){
-			//$node = $child_ary[$node_name];
+
 			$node = $child_ary[$node_name];		
 
 			//not sure if correct
@@ -67,13 +69,13 @@
 	}
   
 	// Gather data for tree in four dimensions [root info][child info][leaf info][leaf data]
-	function callDB($db, $sql=""){
+	function callDB($db, $sql="", $child_flag=false){
 		
 		// Start DB1 call
 		// Store array of components - compare to application name later to confirm if application is a root or a child
 		
 		$cmp_ary; // Stores component nodes
-		$child_ary = []; // Stores child nodes
+		//$child_ary = []; // Stores child nodes
 		
 		$query = "SELECT DISTINCT concat(cmp_name, ' ', cmp_version, '@', cmp_status) AS name, cmp_type,
 				  request_status, request_step, notes 
@@ -109,7 +111,7 @@
 	
 		$bom_ary;	// Not so nice 4-dimensional array that stores BOM table data. Enter the associative keys (app/cmp names) to access the data.
 		$rc_key; 	// Stores the root or child key 
-		$child_ary; // Store the children nodes
+		//$child_ary; // Store the children nodes
 		
 		if ($result->num_rows > 0) {
                    
@@ -137,18 +139,16 @@
 		$result->close();
 	 
 		
-		// Build array with children nodes to be subbed for children nodes in main bom tree array
+		// Build array with children nodes to be subbed for children nodes in main RED bom tree array
 		fillChildAry($bom_ary, $cmp_ary, $child_ary);
 		removeChldrn($bom_ary, $child_ary);
 		finishTree($bom_ary, $child_ary);
 		
-		//echo "<pre>";
-		//echo "Cmp ";
-		//print_r($cmp_ary);
-		//echo "Child ";
-		//print_r($child_ary);
-		//print_r($bom_ary);
-		//echo "</pre>";
+		if($child_flag){
+			return $child_ary;
+		}
+		
+		
 		return $bom_ary;
 	}
 		
@@ -214,6 +214,8 @@
 			
 				ksort($bom_ary);
 		
+			if(!$y || $ry){
+		
 				// Set up base - App names only
 				foreach($bom_ary as $root=>$root_ary){
 			
@@ -225,18 +227,11 @@
 					
 					// Set up root - App names + Versions only
 					foreach($root_ary as $cmp=>$cmp_array){
-						//echo $cmp."<br/>";
-						//echo "<pre>";
-			//			//print_r($cmp_array);
-						//echo "</pre>";
-						
+
 						$leaf_ary = $cmp_array;
 					
 						if(array_key_exists("chldrn", $cmp_array)){
-							//unset($cmp_array["child_flag"]);
 							child($cmp, $tree_switch, $root_id, $child_id, $cmp_array, $leaf_id);
-							//unset($cmp_array[0]);
-							//unset($cmp_array[1]);
 							$child_id++;
 						}
 						else{
@@ -259,6 +254,31 @@
 					$child_id = 1;
 					$root_id++;
 				}
+			}
+			
+			if($y || $ry){
+				$child_ary = callDB($db, $sql, true);
+				
+				//echo "<pre>";
+				//print_r($child_ary);
+				//echo "</pre>";
+				
+				foreach($child_ary as $cmp=>$cmp_array){
+
+						$leaf_ary = $cmp_array;
+					
+						if(array_key_exists("chldrn", $cmp_array)){
+							child_y($cmp, $tree_switch, $child_id, $cmp_array, $leaf_id, $ry);
+							$child_id++;
+						}
+						else{
+							leaf_y($cmp, $cmp_array["specs"], $child_id, $leaf_id);
+						}
+						
+				}
+				$leaf_id = 1;	
+			}
+			
 			}
 			else{ 
 				return false;
@@ -289,10 +309,7 @@
 	function child($child, $tree_switch, $parent_id, $child_id, $cmp_ary, $leaf_id){
 		
 		$chld_id = $parent_id.'.'.$child_id;
-		//echo "<pre>";
-		//print_r($cmp_ary);
-		//echo "<br/></pre>";
-	
+
 		if(array_key_exists("chldrn", $cmp_ary)){			
 			
 			$child_data = explode("@",$child);
@@ -327,6 +344,104 @@
 		//print_r($cmp_ary);
 	}
 
+	
+	function child_y($child, $tree_switch, $child_id, $cmp_ary, $leaf_id, $ry=false){
+		
+		
+			$child_data = explode("@",$child);
+			$name_ver = explode(" ", $child_data[0]);
+			
+		//	echo $child_data[0]." ";
+		//	echo " Leaf id: ".$leaf_id."<br/>";
+	    //echo "<pre>";
+	    //print_r($cmp_ary);
+		//echo "</pre>";
+
+	
+		if($ry){
+			if(array_key_exists("chldrn", $cmp_ary)){			
+			
+			$child_data = explode("@",$child);
+			$name_ver = explode(" ", $child_data[0]);
+			
+
+			echo '<tr class="root '.strToLower($child_data[0]).'" data-tt-id="'.$child_id.'">';
+					
+			echo '<td class="root">'.$name_ver[0].'</td>';
+			echo '<td >'.$name_ver[1].'</td>';
+		
+			for($index=0 ;$index < 4; $index++){
+				echo '<td>'.$cmp_ary["specs"][$index].'</td>';
+			}
+			echo '</tr>';
+	
+			foreach($cmp_ary["chldrn"] as $chlf=>$data){
+				child_y($chlf, $tree_switch, $child_id, $data, $leaf_id);
+				$leaf_id++;
+			}
+
+		}
+			else{
+				//echo $child_id."<br/>";
+				leaf_y($child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
+			}
+
+			
+		
+			$leaf_id=1;
+		}
+		else{
+			if(array_key_exists("chldrn", $cmp_ary)){			
+			
+				$child_data = explode("@",$child);
+				$name_ver = explode(" ", $child_data[0]);
+			
+
+				echo '<tr class="child '.strToLower($child_data[0]).'" data-tt-id="'.$child_id.'">';
+					
+				echo '<td class="child">'.$name_ver[0].'</td>';
+				echo '<td >'.$name_ver[1].'</td>';
+		
+				for($index=0 ;$index < 4; $index++){
+					echo '<td>'.$cmp_ary["specs"][$index].'</td>';
+				}
+				echo '</tr>';
+	
+				foreach($cmp_ary["chldrn"] as $chlf=>$data){
+					child_y($chlf, $tree_switch, $child_id, $data, $leaf_id);
+					$leaf_id++;
+				}
+
+			}
+			else{
+				//echo $child_id."<br/>";
+				leaf_y($child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
+			}
+
+			
+		
+			$leaf_id=1;
+		}
+	}
+	
+		// Print out the leaf nodes - <tr data-tt-id="x.x.x">
+	function leaf_y($leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
+
+			$leaf_data = explode("@", $leaf);
+			$name_ver = explode(" ", $leaf_data[0]);
+		
+			echo '<tr class="'.strToLower($leaf_data[0]).'" data-tt-id="'.$parent_id.".".$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
+			
+			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
+			echo '<td ">'.$name_ver[1].'</td>';	
+			
+			//leafData($leaf_ary);
+			
+			echo '</tr>';		
+		
+	}
+	
+	
 	// Print out the leaf nodes - <tr data-tt-id="x.x.x">
 	function leaf($leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
 
