@@ -273,7 +273,7 @@
 				for(var result_index = 0; result_index < results.length; result_index++){
 					
 					var node = (results[result_index].getAttribute("data-tt-id"));
-					alert(active);
+					//alert(active);
 					$(active).treetable("reveal", node);
 					
 					children = results[result_index].children;
