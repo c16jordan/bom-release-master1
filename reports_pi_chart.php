@@ -63,7 +63,6 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			    do{
 					if($result=mysqli_store_result($db)){
 						while($row=mysqli_fetch_row($result)){
-							//echo "ROW: ".$row[0]."<br/>";
 							$meta_d[] = $row[0];
 						}
 						
@@ -79,10 +78,6 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			for($iter=0; $iter < 6; $iter++){
 				
 				$temp_ary = explode(",", $meta_d[$iter]);
-				
-				//echo "<pre>";
-				//print_r($temp_ary);
-				//echo "</pre>";
 				
 				for($in_iter=0; $in_iter < count($temp_ary); $in_iter++){
 					
@@ -255,41 +250,11 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			foreach($req_cats as $key=>$value){
 				$req_cats[$key] = $req_stats[$iterator++]; 
 			}
-			 
-			 /*
-			 echo "<pre>";
-			 print_r($app_cats);
-			 echo "</pre>";
-			 
-			 
-			 echo "<pre>";
-			 print_r($cmp_cats);
-			 echo "</pre>";
-			 
-			  echo "<pre>";
-			 print_r($req_cats);
-			 echo "</pre>";
-			 
-			 echo "<pre>";
-			 print_r($reqst_cats);
-			 echo "</pre>";
-			 */
-			 
-			 
-			 
-				foreach($app_cats as $key=>$value){
-				//echo "['".$key."',".$value."],";
-			}
 						
 			mysqli_close($db);
 			
 			$total = count($apps) + count($cmps);
-			
-			//echo $total;
-			//echo "<pre>";
-			//print_r($apps);
-			//echo "</pre>";
-			 
+
 			
 ?>
   
@@ -405,20 +370,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
-	  <?php
-
-			$r_submitted = $req_stats[0];
-			$r_approved = $req_stats[1];
-			$r_pending = $req_stats[2];
-	  
-	  ?>
 	  
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent per category'],
-          ['Submitted', <?php echo $r_submitted;?>],
-          ['Approved', <?php echo $r_approved;?>],
-          ['Pending', <?php echo $r_pending;?>]
+			
+			<?php
+				foreach($req_cats as $key=>$value){
+					echo "['".$key."',".$value."],";
+				}
+			?>
+			
         ]);
 
         var options = {
@@ -460,19 +421,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
       function drawChart() {
 		  
-		<?php 
-		
-			$rq_review = $req_steps[0];
-			$rq_approval = $req_steps[1];
-			$rq_inspection = $req_steps[2];
-		
-		?>
 	  
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],
-          ['Review Step', <?php echo $rq_review;?>],
-          ['Approval Step', <?php echo $rq_approval;?>],
-          ['Inspection Step', <?php echo $rq_inspection;?>]
+			
+		  <?php
+			foreach($reqst_cats as $key=>$value){
+				echo "['".$key."',".$value."],";
+			}
+		  ?>
+		  
         ]);
 
         var options = {

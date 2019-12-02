@@ -14,31 +14,108 @@
 			// https://www.w3schools.com/php/func_mysqli_multi_query.asp
 			// God awful multi-query, it's not pretty
 
+			
 			// Arrays to hold respective results
-			$app_stats = [];
+			$apps = [];
+			$cmps = [];
+			$app_stats1 = [];
+			$cmp_stats1 = [];
+			$req_stats1 = [];
+			$req_steps1 = [];
+			
+			// Get status names from db column themselves
+			$mysql = "SELECT GROUP_CONCAT(DISTINCT CONCAT(app_name, ' ', app_version, '@' , app_status)) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT CONCAT(cmp_name, ' ', cmp_version, '@' , cmp_status)) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT app_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT cmp_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT request_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT request_step) FROM sbom;";
+
+			$meta_d = [];
+			$result = $db->query($mysql);
+			
+			 if (mysqli_multi_query($db,$mysql)) {
+
+			    do{
+					if($result=mysqli_store_result($db)){
+						while($row=mysqli_fetch_row($result)){
+							$meta_d[] = $row[0];
+						}
+						
+					 mysqli_free_result($result);
+					}
+					
+				}while(mysqli_next_result($db));
+				
+             }
+			
+	
+			
+			for($iter=0; $iter < 6; $iter++){
+				
+				$temp_ary = explode(",", $meta_d[$iter]);
+				
+				for($in_iter=0; $in_iter < count($temp_ary); $in_iter++){
+					
+					switch($iter){
+						case 0:
+							$apps[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 1:
+							$cmps[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 2:
+							$app_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 3:
+							$cmp_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 4:
+							$req_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 5:
+							$req_steps1[$temp_ary[$in_iter]]=0;
+							break;  
+							
+					}
+				}
+			
+			}
+		
+
+		
+	
+			// Number of elements in each array
+			$app_cnt = count($app_stats1);
+			$cmp_cnt = count($cmp_stats1);
+			$reqst_cnt = count($req_steps1);
+			$reqs_cnt = count($req_stats1);
+			
+			$app_stats = [];	
 			$cmp_stats = [];
 			$req_stats = [];
 			$req_steps = [];
 			
+			$app_cats = [];
+			$cmp_cats = [];
+			$req_cats = [];
+			$reqst_cats = [];
 			
-			$sql = "SELECT COUNT(app_status) FROM sbom WHERE app_status='released';";
-			$sql .= "SELECT COUNT(app_status) FROM sbom WHERE app_status='in_progress';";
-			$sql .= "SELECT COUNT(app_status) FROM sbom WHERE app_status='cancelled';";
+			$sql = "";
+
 			
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='released';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='approved';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='pending';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='submitted';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='in_review';";
+			foreach($req_stats1 as $key=>$value){
+				$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='".$key."';";
+			}
 			
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='submitted';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='approved';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='pending';";
-			
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='review_step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='approval_step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='inspection_step';";
-			
+			foreach($req_steps1 as $key=>$value){
+				$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='".$key."';";
+			}
 			
 			$result = $db->query($sql);
 			
@@ -51,16 +128,10 @@
 					if($result=mysqli_store_result($db)){
 						while($row=mysqli_fetch_row($result)){
 							
-							if($tracker < 3){
-								$app_stats[] = $row[0];
-							}
-							else if($tracker < 8){
-								$cmp_stats[] = $row[0];
-							}
-							else if($tracker < 11){
+							if($tracker < $reqs_cnt){
 								$req_stats[] = $row[0];
 							}
-							else{
+							else if($tracker < $reqs_cnt + $reqst_cnt){
 								$req_steps[] = $row[0];
 							}
 							
@@ -72,11 +143,134 @@
 				}while(mysqli_next_result($db));
 				
              }
-			 //mysqli_close($db);
+			 
+			$iterator=0;
+			foreach($req_steps1 as $key=>$value){
+				$req_steps1[$key] = $req_steps[$iterator];
+				$iterator++;
+			}
+			
+			$iterator=0;
+			foreach($req_stats1 as $key=>$value){
+				$req_stats1[$key] = $req_steps[$iterator];
+				$iterator++;
+			}
+			 		
+
+			//Store type and quantity of app statuses
+			 foreach($apps as $key=>$value){
+				
+				$delim_pos= stripos($key,"@")+1;
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $app_cats)){
+					$app_cats[$category] = $app_cats[$category] + 1;
+				}else{
+					$app_cats[$category] = 1;
+				}
+
+			}
+			
+			//Store type and quantity of cmp statuses
+			foreach($cmps as $key=>$value){
+				
+				$delim_pos= stripos($key,"@")+1;
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $cmp_cats)){
+					$cmp_cats[$category] = $cmp_cats[$category] + 1;
+				}else{
+					$cmp_cats[$category] = 1;
+				}
+
+			}
+			 
+			//Store type of request status statuses
+			foreach($req_stats1 as $key=>$value){
+				
+				$delim_pos= stripos($key,"@");
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $req_cats)){
+					$req_cats[$category] = $req_cats[$category] + 1;
+				}else{
+					$req_cats[$category] = 1;
+				}
+
+			}
+
+			//Store type of request_step statuses
+			foreach($req_steps1 as $key=>$value){
+				
+				$delim_pos= stripos($key,"@");
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $reqst_cats)){
+					$reqst_cats[$category] = $reqst_cats[$category] + 1;
+				}else{
+					$reqst_cats[$category] = 1;
+				}
+
+			}			
+
+			$iterator = 0;
+			foreach($reqst_cats as $key=>$value){
+				$reqst_cats[$key] = $req_steps[$iterator++]; 
+			}
+			
+			$iterator = 0;
+			foreach($req_cats as $key=>$value){
+				$req_cats[$key] = $req_stats[$iterator++]; 
+			}
+						
+			mysqli_close($db);
+			
+			$total = count($apps) + count($cmps);
+
+	
+  
+			$formatting = [];
+			
+			$formatting[] =  "opacity: 0.8; color: Green";
+			$formatting[] =  "opacity: 0.8; color: Blue";
+			$formatting[] =  "opacity: 0.8; color: Purple";
+			$formatting[] =  "opacity: 0.8; color: Red";
+			$formatting[] =  "opacity: 0.8; color: Yellow";
+			$formatting[] =  "opacity: 0.8; color: Orange";
+			$formatting[] =  "opacity: 0.8; color: Brown";
+			$formatting[] =  "opacity: 0.8; color: Indigo";
+			$formatting[] =  "opacity: 0.8; color: Aqua";
+			$formatting[] =  "opacity: 0.8; color: BlueViolet";
+			$formatting[] =  "opacity: 0.8; color: Chocolate";
+			$formatting[] =  "opacity: 0.8; color: Crimson";
+			$formatting[] =  "opacity: 0.8; color: CornflowerBlue";
+			$formatting[] =  "opacity: 0.8; color: SteelBlue";
+			$formatting[] =  "opacity: 0.8; color: Teal";
+			$formatting[] =  "opacity: 0.8; color: Tan";
+			$formatting[] =  "opacity: 0.8; color: Silver";
+			$formatting[] =  "opacity: 0.8; color: SeaGreen";
+			$formatting[] =  "opacity: 0.8; color: Pink";
+			$formatting[] =  "opacity: 0.8; color: Navy";
+			$formatting[] =  "opacity: 0.8; color: OrangeRed";
+			$formatting[] =  "opacity: 0.8; color: BlanchedAlmond";
+			$formatting[] =  "opacity: 0.8; color: DarkOrchid";
+			$formatting[] =  "opacity: 0.8; color: DarkOrange";
+			$formatting[] =  "opacity: 0.8; color: DarkRed";
+			$formatting[] =  "opacity: 0.8; color: Grey";
+			$formatting[] =  "opacity: 0.8; color: DimGrey";
+			$formatting[] =  "opacity: 0.8; color: DeepPink";
+			$formatting[] =  "opacity: 0.8; color: DodgerBlue";
+			
+			shuffle($formatting);
+  		
 ?>
 
 <script src="jquery-3.4.1.js"></script>
-  
+
   
   <div class="right-content">
     <div class="container">
@@ -90,26 +284,24 @@
 		// Application Report Bar Chart
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(drawChart);
-			
-			
-		 <?php
-			$released  = $app_stats[0];
-			$in_prog   = $app_stats[1];
-			$cancelled = $app_stats[2];	
-			
-			$total = $released + $in_prog + $cancelled;
-			
-			$released  = ($released / $total) * 100;
-			$in_prog   = ($in_prog / $total) * 100;
-			$cancelled = ($cancelled / $total) * 100;
-		 ?>
-						
+							
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
-				["Status", "Percentage", { role: "style" } ],
-				['Released', <?php echo $released;?>, "opacity: 0.8; color: blue"],
-				['In_Progress', <?php echo $in_prog;?>, "opacity: 0.8; color: green"],	  
-				['Cancelled', <?php echo $cancelled;?>, "opacity: 0.8; color: grey"]
+				  ["Status", "Percentage", { role: "style" } ],
+				  //["Status", "Percentage"], 
+ 				  <?php
+					$total = 0;
+					$iterator=0;
+					
+					foreach($app_cats as $key=>$value){
+						$total += $value; 
+					}
+				  
+					foreach($app_cats as $key=>$value){
+						echo "['".$key."',".round((($value/$total) * 100),1).",'".$formatting[$iterator++]."'],";
+					}
+				  ?>
+			
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -164,32 +356,25 @@
 		
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(drawChart);
-			
-			
-		<?php
-			$c_released   = $cmp_stats[0];
-			$c_approved   = $cmp_stats[1];
-			$c_pending    = $cmp_stats[2];
-			$c_submitted  = $cmp_stats[3];
-			$c_in_review  = $cmp_stats[4];
-			
-			$total = $c_released + $c_approved + $c_pending + $c_submitted + $c_in_review;
-			
-			$c_released   = ($c_released / $total) * 100;
-			$c_approved   = ($c_approved / $total) * 100;
-			$c_pending    = ($c_pending / $total) * 100;
-			$c_submitted  = ($c_submitted / $total) * 100;
-			$c_in_review  = ($c_in_review / $total) * 100;
-	   ?>  
-						
+									
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-			    ['Released', <?php echo $c_released;?>, "opacity: 0.8; color: blue"],
-				['Approved', <?php echo $c_approved;?>, "opacity: 0.8; color: red"],
-				['Pending', <?php echo $c_pending;?> , "opacity: 0.8; color: Orange"],
-				['Submitted', <?php echo $c_submitted;?>, "opacity: 0.8; color: Green"],
-				['In Review', <?php echo $c_in_review;?>, "opacity: 0.8; color: Purple"]
+				  <?php
+					
+					shuffle($formatting);
+				  
+					$total = 0;
+					$iterator = 0;
+					
+					foreach($cmp_cats as $key=>$value){
+						$total += $value; 
+					}
+				  
+					foreach($cmp_cats as $key=>$value){
+						echo "['".$key."',".round((($value/$total) * 100),1).",'".$formatting[$iterator++]."'],";
+					}
+				  ?>
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -243,26 +428,25 @@
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(drawChart);
 			
-			
-		  <?php
-
-			$r_submitted = $req_stats[0];
-			$r_approved = $req_stats[1];
-			$r_pending = $req_stats[2];
-			
-			$total = $r_submitted + $r_approved + $r_pending;
-				
-			$r_submitted = ($r_submitted / $total) *100;
-			$r_approved = ($r_approved / $total) * 100;
-			$r_pending = ($r_pending / $total) * 100;
-		?>
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-			    ['Submitted', <?php echo $r_submitted;?>, "opacity: 0.8; color: Green"],
-				['Approved', <?php echo $r_approved;?>, "opacity: 0.8; color: Red"],
-				['Pending', <?php echo $r_pending;?>, "opacity: 0.8; color: Orange"]
+			   
+			   <?php
+					shuffle($formatting);
+			   
+					$total = 0;
+					$iterator = 0;
+					
+					foreach($req_cats as $key=>$value){
+						$total += $value; 
+					}
+				  
+					foreach($req_cats as $key=>$value){
+						echo "['".$key."',".round((($value/$total) * 100),1).",'".$formatting[$iterator++]."'],";
+					}
+				  ?>
 			]);
 
 		var view = new google.visualization.DataView(data);
@@ -318,27 +502,25 @@
 		
 		google.charts.load("current", {packages:["corechart"]});
 		google.charts.setOnLoadCallback(drawChart);
-			
-			
-		<?php 
-		
-			$rq_review = $req_steps[0];
-			$rq_approval = $req_steps[1];
-			$rq_inspection = $req_steps[2];
-			
-			$total = $rq_review + $rq_approval + $rq_inspection;
-			$rq_review = ($rq_review / $total) * 100;
-			$rq_approval = ($rq_approval / $total) * 100;
-			$rq_inspection = ($rq_inspection / $total) * 100;
-		
-		?>
 						
 			function drawChart() {
 				var data = google.visualization.arrayToDataTable([
 				["Status", "Percentage", { role: "style" } ],
-				['Review Step', <?php echo $rq_review;?>, "opacity: 0.8; color: Purple"],
-				['Approval Step', <?php echo $rq_approval;?>, "opacity: 0.8; color: Red"],
-				['Inspection Step', <?php echo $rq_inspection;?>, "opacity: 0.8; color: Slateblue"]
+			     
+				 <?php
+					shuffle($formatting);
+			   
+					$total = 0;
+					$iterator = 0;
+					
+					foreach($reqst_cats as $key=>$value){
+						$total += $value; 
+					}
+				  
+					foreach($reqst_cats as $key=>$value){
+						echo "['".$key."',".round((($value/$total) * 100),1).",'".$formatting[$iterator++]."'],";
+					}
+				  ?>
 			]);
 
 		var view = new google.visualization.DataView(data);
