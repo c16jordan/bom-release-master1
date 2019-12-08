@@ -18,18 +18,22 @@
 				
 				}
 			}
+
 	}
   
     
 	// Remove child nodes from RED tree array
 	function removeChldrn(&$bom_ary, $child_ary){
 				
-		foreach($bom_ary as $rc=>$chlf_ary){
+		if($child_ary != null){
 			
-			if(array_key_exists($rc, $child_ary)){
-				unset($bom_ary[$rc]);		
+			foreach($bom_ary as $rc=>$chlf_ary){
+			
+				if(array_key_exists($rc, $child_ary)){
+					unset($bom_ary[$rc]);		
+				}
+			
 			}
-			
 		}
 		
 	}
@@ -53,6 +57,7 @@
   
 	function updateChild($node_name, &$node, $child_ary){
 
+	if($child_ary !=null){
 		if(array_key_exists($node_name, $child_ary)){
 
 			$node = $child_ary[$node_name];		
@@ -66,6 +71,8 @@
 		}
 		
 		return $node;	
+	}
+		
 	}
   
 	// Gather data for tree in four dimensions [root info][child info][leaf info][leaf data]
@@ -109,7 +116,9 @@
 		
 		$result = $db->query($sql);
 	
-		$bom_ary;	// Not so nice 4-dimensional array that stores BOM table data. Enter the associative keys (app/cmp names) to access the data.
+		$cp_ary;
+		$root_ary;	// Last minute patch to get code to function correctly - not the ideal solution
+		$bom_ary;	// Array that stores BOM table data. Enter the associative keys (app/cmp names) to access the data.
 		$rc_key; 	// Stores the root or child key 
 		//$child_ary; // Store the children nodes
 		
@@ -128,6 +137,10 @@
 								 
 				// Convert leaf data string into an numerically indexed array
 				$bom_ary[$rc_key][$leaf_key]["specs"] = explode("@", $value);
+				$root_ary[$rc_key]["name"] = $row["app_name"]; 
+				$root_ary[$rc_key]["version"] = $row["app_version"]; 
+				$cp_ary[$leaf_key]["name"] = $row["cmp_name"]; 
+				$cp_ary[$leaf_key]["version"] = $row["cmp_version"]; 
             }
          }
          else {
@@ -148,8 +161,13 @@
 			return $child_ary;
 		}
 		
+		$return_ary = [];
 		
-		return $bom_ary;
+		$return_ary["bom"] = $bom_ary;
+		$return_ary["root"] = $root_ary;
+		$return_ary["cp"] = $cp_ary;
+		
+		return $return_ary;
 	}
 		
 	// Set up the columns by name
@@ -208,7 +226,11 @@
 				$tree_switch = 2;
 			}
 			
-			$bom_ary = callDB($db, $sql);
+			$returned  = callDB($db, $sql);
+
+			$bom_ary = $returned["bom"];
+			$rt_ary = $returned["root"];
+			$cp_ary = $returned["cp"];			
 			
 			if($bom_ary !== false){
 			
@@ -222,7 +244,7 @@
 					$leaf_array;
 				
 					// Echo out root node data
-					root($root, $tree_switch, $root_id);
+					root($rt_ary, $root, $tree_switch, $root_id);
 					
 					
 					// Set up root - App names + Versions only
@@ -231,11 +253,11 @@
 						$leaf_ary = $cmp_array;
 					
 						if(array_key_exists("chldrn", $cmp_array)){
-							child($cmp, $tree_switch, $root_id, $child_id, $cmp_array, $leaf_id);
+							child($rt_ary, $cp_ary, $cmp, $tree_switch, $root_id, $child_id, $cmp_array, $leaf_id);
 							$child_id++;
 						}
 						else{
-							leaf($cmp, $cmp_array["specs"], $root_id, $child_id);
+							leaf($cp_ary, $cmp, $cmp_array["specs"], $root_id, $child_id);
 						}
 		
 				
@@ -244,12 +266,7 @@
 						
 					
 					}
-				
-				/*
-					if($ry){
-						$root_id = redsYellows($root_ary, $tree_switch, $root_id, $leaf_array);
-					}
-				*/
+
 				
 					$child_id = 1;
 					$root_id++;
@@ -259,10 +276,7 @@
 			if($y || $ry){
 				$child_ary = callDB($db, $sql, true);
 				
-				//echo "<pre>";
-				//print_r($child_ary);
-				//echo "</pre>";
-				
+
 				if($ry){
 					$child_id = $root_id;
 				}
@@ -272,11 +286,11 @@
 						$leaf_ary = $cmp_array;
 					
 						if(array_key_exists("chldrn", $cmp_array)){
-							child_y($cmp, $tree_switch, $child_id, $cmp_array, $leaf_id, $ry);
+							child_y($rt_ary, $cp_ary, $cmp, $tree_switch, $child_id, $cmp_array, $leaf_id, $ry);
 							$child_id++;
 						}
 						else{
-							leaf_y($cmp, $cmp_array["specs"], $child_id, $leaf_id);
+							leaf_y($cp_ary, $cmp, $cmp_array["specs"], $child_id, $leaf_id);
 						}
 						
 				}
@@ -290,15 +304,15 @@
 		}
 
 	// Print out the root nodes - <tr data-tt-id="x">
-	function root($root, $tree_switch, $id){
+	function root($rt_ary, $root, $tree_switch, $id){
 
 		//getNodes($id, $tree_switch, true);
 		$root_data = explode("@", $root);
 		$name_ver = explode(" ",$root_data[0]);
 		
 		echo '<tr class="'.strToLower($root_data[0]).'" data-tt-id="'.$id.'">';
-		echo '<td class="root">'.$name_ver[0].'</td>';
-		echo '<td >'.$name_ver[1].'</td>';
+		echo '<td class="root">'.$rt_ary[$root]["name"].'</td>';
+		echo '<td >'.$rt_ary[$root]["version"].'</td>';
 		echo '<td >'.$root_data[1].'</td>';
 		
 		for($index=0; $index < 4; $index++){
@@ -310,7 +324,7 @@
 	}
 
 	// Print out the child nodes - <tr data-tt-id="x.x">
-	function child($child, $tree_switch, $parent_id, $child_id, $cmp_ary, $leaf_id){
+	function child($rt_ary, $cp_ary, $child, $tree_switch, $parent_id, $child_id, $cmp_ary, $leaf_id){
 		
 		$chld_id = $parent_id.'.'.$child_id;
 
@@ -322,9 +336,8 @@
 
 			echo '<tr class="child '.strToLower($child_data[0]).'" data-tt-id="'.$chld_id.'" data-tt-parent-id="'.$parent_id.'">';
 					
-			echo '<td class="child">'.$name_ver[0].'</td>';
-			echo '<td >'.$name_ver[1].'</td>';
-			//echo '<td >'.$child_data[1].'</td>';
+			echo '<td class="child">'.$rt_ary[$child]["name"].'</td>';
+			echo '<td >'.$rt_ary[$child]["version"].'</td>';
 		
 			for($index=0 ;$index < 4; $index++){
 				echo '<td>'.$cmp_ary["specs"][$index].'</td>';
@@ -332,13 +345,13 @@
 			echo '</tr>';
 		
 			foreach($cmp_ary["chldrn"] as $chlf=>$data){
-				child($chlf, $tree_switch, $parent_id, $child_id, $data, $leaf_id);
+				child($rt_ary, $cp_ary, $chlf, $tree_switch, $parent_id, $child_id, $data, $leaf_id);
 				$leaf_id++;
 			}
 
 		}
 		else{
-				leaf($child,$cmp_ary["specs"],$chld_id,$leaf_id, 1);
+				leaf($cp_ary, $child,$cmp_ary["specs"],$chld_id,$leaf_id, 1);
 		}
 
 			
@@ -349,19 +362,12 @@
 	}
 
 	
-	function child_y($child, $tree_switch, $child_id, $cmp_ary, $leaf_id, $ry=false){
+	function child_y($rt_ary, $cp_ary, $child, $tree_switch, $child_id, $cmp_ary, $leaf_id, $ry=false){
 		
 		
-			$child_data = explode("@",$child);
-			$name_ver = explode(" ", $child_data[0]);
+		$child_data = explode("@",$child);
+		$name_ver = explode(" ", $child_data[0]);
 			
-		//	echo $child_data[0]." ";
-		//	echo " Leaf id: ".$leaf_id."<br/>";
-	    //echo "<pre>";
-	    //print_r($cmp_ary);
-		//echo "</pre>";
-
-	
 		if($ry){
 			if(array_key_exists("chldrn", $cmp_ary)){			
 			
@@ -371,8 +377,8 @@
 
 			echo '<tr class="root '.strToLower($child_data[0]).'" data-tt-id="'.$child_id.'">';
 					
-			echo '<td class="root">'.$name_ver[0].'</td>';
-			echo '<td >'.$name_ver[1].'</td>';
+			echo '<td class="root">'.$rt_ary[$child]["name"].'</td>';
+			echo '<td >'.$rt_ary[$child]["version"].'</td>';
 			echo '<td >'.$child_data[1].'</td>';
 		
 		
@@ -382,14 +388,14 @@
 			echo '</tr>';
 	
 			foreach($cmp_ary["chldrn"] as $chlf=>$data){
-				child_y($chlf, $tree_switch, $child_id, $data, $leaf_id);
+				child_y($rt_ary, $cp_ary, $chlf, $tree_switch, $child_id, $data, $leaf_id);
 				$leaf_id++;
 			}
 
 		}
 			else{
 				//echo $child_id."<br/>";
-				leaf_y($child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
+				leaf_y($cp_ary, $child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
 			}
 
 			
@@ -414,14 +420,14 @@
 				echo '</tr>';
 	
 				foreach($cmp_ary["chldrn"] as $chlf=>$data){
-					child_y($chlf, $tree_switch, $child_id, $data, $leaf_id);
+					child_y($rt_ary, $cp_ary, $chlf, $tree_switch, $child_id, $data, $leaf_id);
 					$leaf_id++;
 				}
 
 			}
 			else{
 				//echo $child_id."<br/>";
-				leaf_y($child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
+				leaf_y($cp_ary, $child,$cmp_ary["specs"],$child_id,$leaf_id, 1);
 			}
 
 			
@@ -431,15 +437,15 @@
 	}
 	
 		// Print out the leaf nodes - <tr data-tt-id="x.x.x">
-	function leaf_y($leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
+	function leaf_y($cp_ary, $leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
 
 			$leaf_data = explode("@", $leaf);
 			$name_ver = explode(" ", $leaf_data[0]);
 		
 			echo '<tr class="'.strToLower($leaf_data[0]).'" data-tt-id="'.$parent_id.".".$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
 			
-			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
-			echo '<td ">'.$name_ver[1].'</td>';	
+			echo '<td class="leaves ">'.$cp_ary[$leaf]["name"].'</td>';	
+			echo '<td ">'.$cp_ary[$leaf]["version"].'</td>';	
 			
 			leafData($leaf_ary);
 			
@@ -449,15 +455,15 @@
 	
 	
 	// Print out the leaf nodes - <tr data-tt-id="x.x.x">
-	function leaf($leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
+	function leaf($cp_ary, $leaf, $leaf_ary, $parent_id, $leaf_id,$child_flag=0){
 
 			$leaf_data = explode("@", $leaf);
 			$name_ver = explode(" ", $leaf_data[0]);
 		
 			echo '<tr class="'.strToLower($leaf_data[0]).'" data-tt-id="'.$parent_id.'.'.$leaf_id.'" data-tt-parent-id="'.$parent_id.'">';
 			
-			echo '<td class="leaves ">'.$name_ver[0].'</td>';	
-			echo '<td ">'.$name_ver[1].'</td>';	
+			echo '<td class="leaves ">'.$cp_ary[$leaf]["name"].'</td>';	
+			echo '<td ">'.$cp_ary[$leaf]["version"].'</td>';	
 			
 			leafData($leaf_ary);
 			
@@ -482,14 +488,14 @@
 	
 		foreach($child_ary as $child=>$leaf_array){
 
-			child($child, $tree_switch, 0, ++$root_id);
+			child($rt_ary, $cp_ary, $child, $tree_switch, 0, ++$root_id);
 			
 			$leaf_parent = $root_id;
 			
 			// Set up leaf - Cmp Name + Versions only
 			foreach($leaf_array as $leaf=>$leaf_values){
 			
-				leaf($leaf, $leaf_values, $leaf_parent ,$leaf_id);	
+				leaf($cp_ary, $leaf, $leaf_values, $leaf_parent ,$leaf_id);	
 				$leaf_id++;
 			}
 				
@@ -503,6 +509,6 @@
 	
 	//TEST
 	
-	callDB($db);
+	//callDB($db);
 	
 ?>

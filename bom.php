@@ -54,20 +54,14 @@
 	<tbody id="treeSpace">
 		<?php 	
 			
-			// Check for root node name - app name only first
-			$sql = "SELECT * FROM sbom WHERE app_name ='".$_SESSION['name']."'"; 
-			//$sql = "SELECT * FROM sbom WHERE app_name ='Quizmaster'"; 
-			$returned = phpMakeTree($db, $ry=false, $y=false, $sql);
-			
-			if($returned === false){
-				
+
 				//Check for child node - app_name + app_version
 				$sql = "SELECT * FROM sbom WHERE CONCAT(app_name,' ',app_version) ='".$_SESSION['name']."'"; 
-				$returned = phpMakeTree($db, $ry=false, $y=true, $sql);
+				$returned = phpMakeTree($db, $ry=false, $y=false, $sql);
 					if($returned === false){
 						echo "No results found.";
 					}
-			}
+
 			
 		?>
 	</tbody>
