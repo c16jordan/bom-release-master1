@@ -36,35 +36,20 @@
                 </tr>
               </thead>
 
-              <tfoot>
-                <tr>
-                        <th>Name</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Open Date</th>
-                        <th>Dependency Date</th>
-                        <th>Content Date</th>
-                        <th>RTM Date(s)</th>
-                        <th>Manager</th>
-                        <th>Author</th>
-                        <th>BOM ID</th>
-                </tr>
-              </tfoot>
-
               <tbody>
 
               <?php
 
-$sql = "SELECT * from releases ORDER BY rtm_date ASC;";
-$result = $db->query($sql);
+				$sql = "SELECT * from releases ORDER BY rtm_date ASC;";
+				$result = $db->query($sql);
 
                 if ($result->num_rows > 0) {
                     // output data of each row
                     while($row = $result->fetch_assoc()) {
-                        echo '<tr>
+                        // finger pointer icon - https://stackoverflow.com/questions/8809909/change-cursor-to-finger-pointer
+						echo '<tr>
                                 <td>'.$row["id"].'</td>
-                                <td>'.$row["name"].' </span> </td>
+                                <td><a class="bomLink" onmouseover="" style="cursor: pointer";>'.$row["name"].'</a></span> </td>
                                 <td>'.$row["type"].'</td>
                                 <td>'.$row["status"].'</td>
                                 <td>'.$row["open_date"].' </span> </td>
@@ -85,6 +70,22 @@ $result = $db->query($sql);
                 ?>
 
               </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>Name</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Open Date</th>
+                        <th>Dependency Date</th>
+                        <th>Content Date</th>
+                        <th>RTM Date(s)</th>
+                        <th>Manager</th>
+                        <th>Author</th>
+                        <th>BOM ID</th>
+                </tr>
+              </tfoot>
         </table>
 
 
@@ -119,11 +120,44 @@ $result = $db->query($sql);
             retrieve: true
         } );
         
+		table.on( 'draw', function () {
+
+			$(".bomLink").click(function(){
+			var app_name = $(this).html();
+
+			// https://stackoverflow.com/questions/2367594/open-url-while-passing-post-data-with-jquery
+			$.post("save.php",{'name': app_name});
+			window.open('bom.php');
+			
+			});
+		});
+		
     } );
 
 </script>
 
-        
+ 
+ 
+<script>
+// Problem - css on A tags does not apply past first page - you must apply jquery click event on table redraw
+//https://stackoverflow.com/questions/38005422/click-event-only-works-on-the-first-page-when-combined-with-jquery-datatables-w
+	$(document).ready(function(){
+		$(".bomLink").click(function(){
+			//alert("CLICKED");
+			var app_name = $(this).html();
+
+			// https://stackoverflow.com/questions/2367594/open-url-while-passing-post-data-with-jquery
+			$.post("save.php",{'name': app_name});
+			window.open('bom.php');
+		});
+	});
+
+	   var table = $('#info').DataTable;
+	   
+
+	
+</script>
+
 
  <style>
    tfoot {

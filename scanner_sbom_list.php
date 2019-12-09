@@ -12,12 +12,7 @@
 
       <h3 style = "color: #01B0F1;">Scanner --> Software BOM </h3>
 
-    </div>
-</div>
-<div class="right-content">
-    <div class="container">
 
-      <h3 style = "color: #01B0F1;">Scanner -> System Releases List</h3>
 
         <h3><img src="images/releases.png" style="max-height: 35px;" />System Releases</h3>
 
@@ -42,25 +37,6 @@
                         <th>Notes</th>
                 </tr>
               </thead>
-
-              <tfoot>
-                <tr>
-                        <th>App Id</th>
-                        <th>App Name</th>
-                        <th>App Version</th>
-                        <th>Cmp Id</th>
-                        <th>Cmp Name</th>
-                        <th>Cmp Version</th>
-                        <th>Cmp Type</th>
-                        <th>App Status</th>
-                        <th>Cmp Status</th>
-						<th>Request Id</th>
-                        <th>Request Date</th>
-                        <th>Request Status</th>
-                        <th>Request Step</th>
-                        <th>Notes</th>
-                </tr>
-              </tfoot>
 
               <tbody>
 
@@ -98,9 +74,29 @@ $result = $db->query($sql);
                 ?>
 
               </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </tfoot>
         </table>
 
-
+	</div>
+</div>
         <script type="text/javascript" language="javascript">
     $(document).ready( function () {
         

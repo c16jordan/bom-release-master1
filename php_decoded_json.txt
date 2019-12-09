@@ -1,8 +1,0 @@
-stdClass Object
-(
-    [sort_by] => dependency_date
-    [status] => Draft
-    [type] => Minor
-    [open_date] => 1970-01-01
-    [rtm_date] => 2070-01-01
-)

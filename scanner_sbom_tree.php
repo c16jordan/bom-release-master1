@@ -4,185 +4,163 @@
   $left_selected = "SBOMTREE";
 
   include("./nav.php");   
+  include('sbomtreePhp.php');
+  global $db;
  ?>
+
  
-    <link rel="stylesheet" href="css/screen.css" media="screen" />
-    <link rel="stylesheet" href="css/jquery.treetable.css" />
-    <link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
-	<script src="jquery-3.4.1.js"></script>
+ <link rel="stylesheet" href="css/screen.css" media="screen" />
+ <link rel="stylesheet" href="css/jquery.treetable.css" />
+ <link rel="stylesheet" href="css/jquery.treetable.theme.default.css" />
+ <link rel="stylesheet" type="text/css" href="mycss.css">
+ <script src="jquery-3.4.1.js"></script>
  
-		
-		<div class="right-content">
-			<div class="container">
+<div class="right-content">
+	<div class="container">
 	
-				<h3 style = "color: #01B0F1;">Scanner --> BOM Tree</h3>
-				
-				
-				
-
-	<?php 
-	
-	
-	$sql = "SELECT app_name, app_version, app_status, 
-				   cmp_name, cmp_version, cmp_type, cmp_status,
-				   request_id, request_date, request_status, request_step,
-				   notes 
-			FROM sbom";
-			
-	$result = $db->query($sql);
-	
-	
-	$bom_ary;	// Associative array to store Application info and that of its components
-	$key;
-    
-
-		if ($result->num_rows > 0) {
-                   
-			while($row = $result->fetch_assoc()) {
-				
-			// Store relevant components by Application (name+id)
-			$key = $row["app_name"]." ".$row["app_version"];
-			$value = $row["app_status"]
-				."@".$row["cmp_name"]." ".$row["cmp_version"]."@".$row["cmp_type"]."@".$row["cmp_status"]
-				."@".$row["request_id"]."@".$row["request_date"]."@".$row["request_status"]."@".$row["request_step"]
-				."@".$row["notes"];
-								 
-				$bom_ary[$key][] = explode("@", $value);
-            }
-         }
-         else {
-            echo "0 results";
-         }
-		 
-     $result->close();
-     ?>
-
-	 
- <!-- Fill table rows -->
-
+		<h3 style = "color: #01B0F1;">Scanner --> BOM Tree</h3>
+ 
+<!-- https://www.w3schools.com/howto/howto_js_autocomplete.asp -->
+ <div id="tables">
+ 
  <table id="sbom_tree">
-	<caption>
-		<button id="expand" style="font-size: 10px">Expand</button>
-		<button id="collapse" style="font-size: 10px">Collapse</button>
-	</caption>
+ 
+	<div>
+	
+		<caption>
+			<button id="expand" style="font-size: 10px">Expand All</button>
+			<button id="collapse" style="font-size: 10px">Collapse All</button>
+			<button id="colorize" style="font-size: 10px"> Toggle Color </button>
+			<button id="reds" style="font-size: 10px">Reds</button>
+			<button id="yellows" style="font-size: 10px">Yellows</button>
+			<button id="red_yellow" style="font-size: 10px"> Reds and Yellows </button>
+			<button id="where_button" style="font-size: 10px; margin-left:25px">Where used</button>
+		
+			<input id="where_used" type="text" placeholder="name;[version id] option"></input>
+			<span id="error"></span>
+		
+		</caption>
+		
+	</div>
+	
 	
 	<thead>
+	
 	<tr>
-	<?php 
-		// Set up the columns by name
-		
-		echo "<th>Application</th>";
-		echo "<th>Application Status</th>";
-		echo "<th>Component Type</th>";
-		echo "<th>Component Status</th>";
-		echo "<th>Request Id</th>";
-		echo "<th>Request Date</th>";
-		echo "<th>Request Status</th>";
-		echo "<th>Request Step</th>";
-		echo "<th>Notes</th>";
-	?>
+		<?php setupTheaders(); ?>
 	</tr>
+	
 	</thead>
 	
-	<tbody>
-	<?php
-		// Set up the root nodes
-		$count=0;
-		$parent_id=1;
-		
-		ksort($bom_ary);
-		
-		foreach($bom_ary as $key=>$value){
-			echo '<tr data-tt-id="'.$parent_id.'">';
-			echo '<td>'.$key.'</td>';
-			
-			
-		// Set up the child nodes
-		
-		$child_index=0;
-		$add_status = 1;
-		
-		foreach($value as $key=>$child){
-			
-			// Gets individual child record
-			$child_data = $value[$child_index];
-			
-			
-			for($index=0; $index < count($child_data); $index++){
-				
-				if($index == 0){
-				
-					// Complete root node
-					if($add_status === 1){
-						echo '<td>'.$child_data[0].'</td>';
-						echo '</tr>';	// Closing tr tag for root note data
-						$add_status = 0;
-											}
-					else{
-						echo '</tr>';
-					}
-					
-					continue;
-
-				}
-				
-				
-				// Begin component node row
-				if($index == 1){
-					echo '<tr data-tt-id="'.$parent_id.".".($child_index+1).'" tr data-tt-parent-id="'.$parent_id.'">';
-					echo '<td>'.$child_data[$index].'</td>';
-					echo '<td></td>';
-					continue;
-				}
-				
-				// Fill in component data
-				echo '<td>'.$child_data[$index].'</td>';
-			}
-			
-			// Close component node row
-			echo '</tr>';
-			$child_index++;
-		}
-		
-		
-		
-		$parent_id++;
-		}
-	?>	
+	<tbody id="treeSpace">
+		<?php phpMakeTree($db);?>
 	</tbody>
-	
+
 </table>	
 		
+
+<table id="sbom_tree2" style="visibility: hidden">
+ 
+	<div>
+	
+		<caption>
+			<button id="expand2" style="font-size: 10px">Expand All</button>
+			<button id="collapse2" style="font-size: 10px">Collapse All</button>
+			<button id="colorize2" style="font-size: 10px"> Toggle Color </button>
+			<button id="reds2" style="font-size: 10px">Reds</button>
+			<button id="yellows2" style="font-size: 10px">Yellows</button>
+			<button id="red_yellow2" style="font-size: 10px"> Reds and Yellows </button>
+			<button id="where_button2" style="font-size: 10px; margin-left:25px">Where used</button>
+	
+			<input id="where_used2" type="text" placeholder="name;[version id] option"></input>
+			<span id="error"></span>
 		
+		</caption>
+		
+	</div>
+	
+
+	<thead>
+	
+	<tr>
+		<?php setupTheaders(); ?>
+	</tr>
+	
+	</thead>
+	
+	<tbody id="treeSpace2">
+		<?php  phpMakeTree($db, true); ?>
+	</tbody>
+
+</table>
 
 
-		<script src="jquery.treetable.js"></script>
+
+<p>
+
+<table id="sbom_tree3" style="visibility: hidden">
+ 
+	<div>
+	
+		<caption>
+			<button id="expand3" style="font-size: 10px">Expand All</button>
+			<button id="collapse3" style="font-size: 10px">Collapse All</button>
+			<button id="colorize3" style="font-size: 10px"> Toggle Color </button>
+			<button id="reds3" style="font-size: 10px">Reds</button>
+			<button id="yellows3" style="font-size: 10px">Yellows</button>
+			<button id="red_yellow3" style="font-size: 10px"> Reds and Yellows </button>
+			<button id="where_button3" style="font-size: 10px; margin-left:25px">Where used</button>
+	
+			<input id="where_used3" type="text" placeholder="name;[version id] option"></input>
+			<span id="error"></span>
 		
+		</caption>
+		
+	</div>
+	
+
+	<thead>
+	
+	<tr>
+		<?php setupTheaders(); ?>
+	</tr>
+	
+	</thead>
+	
+	<tbody id="treeSpace3">
+		<?php  phpMakeTree($db, false, true); ?>
+	</tbody>
+
+</table>
+
+
+</p>
+
+
+
+
+
+</div>
+
+		<script src="sbomtreeJs.js"> </script>
+		<script src="jquery.treetable.js"></script>	
 		
 		<script>
-		$(document).ready(function(){
-				$("#expand").click(function(){
-					$('#sbom_tree').treetable('expandAll');
-					//alert("Expand");
-				});
-		});
-		
-		$(document).ready(function(){
-				$("#collapse").click(function(){
-					$('#sbom_tree').treetable('collapseAll');
-					//alert("Collapse");
-				});
-		});
+			//var node_array = <?php getNodes(); ?> ;
+			//var node_array2 = <?php getNodes("",2); ?> ;
 		</script>
-		
 		
 		<script>
 			$("#sbom_tree").treetable({ expandable: true });
+			$("#sbom_tree2").treetable({ expandable: true });
+			$("#sbom_tree3").treetable({ expandable: true });
 		</script>	
 
 			
 	</div>
 </div>
+
+
 
 
 <?php //include("./footer.php"); ?>

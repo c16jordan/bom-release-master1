@@ -38,31 +38,108 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			// https://www.w3schools.com/php/func_mysqli_multi_query.asp
 			// God awful multi-query, it's not pretty
 
+			
 			// Arrays to hold respective results
-			$app_stats = [];
+			$apps = [];
+			$cmps = [];
+			$app_stats1 = [];
+			$cmp_stats1 = [];
+			$req_stats1 = [];
+			$req_steps1 = [];
+			
+			// Get status names from db column themselves
+			$mysql = "SELECT GROUP_CONCAT(DISTINCT CONCAT(app_name, ' ', app_version, '@' , app_status)) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT CONCAT(cmp_name, ' ', cmp_version, '@' , cmp_status)) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT app_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT cmp_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT request_status) FROM sbom;";
+			$mysql .= "SELECT GROUP_CONCAT(DISTINCT request_step) FROM sbom;";
+
+			$meta_d = [];
+			$result = $db->query($mysql);
+			
+			 if (mysqli_multi_query($db,$mysql)) {
+
+			    do{
+					if($result=mysqli_store_result($db)){
+						while($row=mysqli_fetch_row($result)){
+							$meta_d[] = $row[0];
+						}
+						
+					 mysqli_free_result($result);
+					}
+					
+				}while(mysqli_next_result($db));
+				
+             }
+			
+	
+			
+			for($iter=0; $iter < 6; $iter++){
+				
+				$temp_ary = explode(",", $meta_d[$iter]);
+				
+				for($in_iter=0; $in_iter < count($temp_ary); $in_iter++){
+					
+					switch($iter){
+						case 0:
+							$apps[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 1:
+							$cmps[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 2:
+							$app_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 3:
+							$cmp_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 4:
+							$req_stats1[$temp_ary[$in_iter]]=0;
+							break;
+						
+						case 5:
+							$req_steps1[$temp_ary[$in_iter]]=0;
+							break;  
+							
+					}
+				}
+			
+			}
+		
+
+		
+	
+			// Number of elements in each array
+			$app_cnt = count($app_stats1);
+			$cmp_cnt = count($cmp_stats1);
+			$reqs_cnt = count($req_stats1);
+			$reqst_cnt = count($req_steps1);
+			
+			$app_stats = [];	
 			$cmp_stats = [];
 			$req_stats = [];
 			$req_steps = [];
 			
+			$app_cats = [];
+			$cmp_cats = [];
+			$req_cats = [];
+			$reqst_cats = [];
 			
-			$sql = "SELECT COUNT(app_status) FROM sbom WHERE app_status='released';";
-			$sql .= "SELECT COUNT(app_status) FROM sbom WHERE app_status='in_progress';";
-			$sql .= "SELECT COUNT(app_status) FROM sbom WHERE app_status='cancelled';";
+			$sql = "";
+
 			
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='released';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='approved';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='pending';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='submitted';";
-			$sql .= "SELECT COUNT(cmp_status) FROM sbom WHERE cmp_status='in_review';";
+			foreach($req_stats1 as $key=>$value){
+				$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='".$key."';";
+			}
 			
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='submitted';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='approved';";
-			$sql .= "SELECT COUNT(request_status) FROM sbom WHERE request_status='pending';";
-			
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Review Step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Approval Step';";
-			$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='Inspection Step';";
-			
+			foreach($req_steps1 as $key=>$value){
+				$sql .= "SELECT COUNT(request_step) FROM sbom WHERE request_step='".$key."';";
+			}
 			
 			$result = $db->query($sql);
 			
@@ -75,16 +152,10 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 					if($result=mysqli_store_result($db)){
 						while($row=mysqli_fetch_row($result)){
 							
-							if($tracker < 3){
-								$app_stats[] = $row[0];
-							}
-							else if($tracker < 8){
-								$cmp_stats[] = $row[0];
-							}
-							else if($tracker < 11){
+							if($tracker < $reqs_cnt){
 								$req_stats[] = $row[0];
 							}
-							else{
+							else if($tracker < $reqs_cnt + $reqst_cnt){
 								$req_steps[] = $row[0];
 							}
 							
@@ -96,7 +167,95 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 				}while(mysqli_next_result($db));
 				
              }
-			 mysqli_close($db);
+			 
+			$iterator=0;
+			foreach($req_steps1 as $key=>$value){
+				$req_steps1[$key] = $req_steps[$iterator];
+				$iterator++;
+			}
+			
+			$iterator=0;
+			foreach($req_stats1 as $key=>$value){
+				$req_stats1[$key] = $req_steps[$iterator];
+				$iterator++;
+			}
+			 		
+
+			//Store type and quantity of app statuses
+			 foreach($apps as $key=>$value){
+				
+				$delim_pos= stripos($key,"@")+1;
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $app_cats)){
+					$app_cats[$category] = $app_cats[$category] + 1;
+				}else{
+					$app_cats[$category] = 1;
+				}
+
+			}
+			
+			//Store type and quantity of cmp statuses
+			foreach($cmps as $key=>$value){
+				
+				$delim_pos= stripos($key,"@")+1;
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $cmp_cats)){
+					$cmp_cats[$category] = $cmp_cats[$category] + 1;
+				}else{
+					$cmp_cats[$category] = 1;
+				}
+
+			}
+			 
+			//Store type of request status statuses
+			foreach($req_stats1 as $key=>$value){
+				
+				$delim_pos= stripos($key,"@");
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $req_cats)){
+					$req_cats[$category] = $req_cats[$category] + 1;
+				}else{
+					$req_cats[$category] = 1;
+				}
+
+			}
+
+			//Store type of request_step statuses
+			foreach($req_steps1 as $key=>$value){
+				
+				$delim_pos= stripos($key,"@");
+				$str_len = strlen($key);
+				$category = substr($key, $delim_pos, $str_len);
+				
+				if(array_key_exists($category, $reqst_cats)){
+					$reqst_cats[$category] = $reqst_cats[$category] + 1;
+				}else{
+					$reqst_cats[$category] = 1;
+				}
+
+			}			
+
+			$iterator = 0;
+			foreach($reqst_cats as $key=>$value){
+				$reqst_cats[$key] = $req_steps[$iterator++]; 
+			}
+			
+			$iterator = 0;
+			foreach($req_cats as $key=>$value){
+				$req_cats[$key] = $req_stats[$iterator++]; 
+			}
+						
+			mysqli_close($db);
+			
+			$total = count($apps) + count($cmps);
+
+			
 ?>
   
   
@@ -110,20 +269,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
       function drawChart() {
 
-	  <?php
-	  
-		$released  = $app_stats[0];
-		$in_prog   = $app_stats[1];
-		$cancelled = $app_stats[2];
-	  
-	  
-	  ?>
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],
 		  
-          ['Released', <?php echo $released;?>],
-		  ['In_Progress', <?php echo $in_prog;?>],	  
-		  ['Cancelled', <?php echo $cancelled;?>]
+		  <?php
+			foreach($app_cats as $key=>$value){
+				echo "['".$key."',".$value."],";
+			}
+		  ?>
 			
 		]);
 
@@ -139,9 +292,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('request_status' ,value);
+				resetFilters();
+				
+				table.column(7).search(value);
+				table.draw();
+			
+				resetFilters();
 			}
 			
 		}
@@ -163,22 +321,15 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
-	  <?php
-		$c_released   = $cmp_stats[0];
-		$c_approved   = $cmp_stats[1];
-		$c_pending    = $cmp_stats[2];
-		$c_submitted  = $cmp_stats[3];
-		$c_in_review  = $cmp_stats[4];
-	   ?>  
 	   
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],
-          ['Released', <?php echo $c_released;?>],
-          ['Approved', <?php echo $c_approved;?>],
-          ['Pending', <?php echo $c_pending;?>],
-          ['Submitted', <?php echo $c_submitted;?>],
-          ['In Review', <?php echo $c_in_review;?>]
+			
+		  <?php
+			foreach($cmp_cats as $key=>$value){
+				echo "['".$key."',".$value."],";
+			}
+		  ?>
 		  
         ]);
 
@@ -193,9 +344,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('cmp_status' ,value);
+				resetFilters();
+				
+				table.column(8).search(value);
+				table.draw();
+				
+				resetFilters();
 			}
 			
 		}
@@ -214,20 +370,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
-	  <?php
-
-			$r_submitted = $req_stats[0];
-			$r_approved = $req_stats[1];
-			$r_pending = $req_stats[2];
-	  
-	  ?>
 	  
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent per category'],
-          ['Submitted', <?php echo $r_submitted;?>],
-          ['Approved', <?php echo $r_approved;?>],
-          ['Pending', <?php echo $r_pending;?>]
+			
+			<?php
+				foreach($req_cats as $key=>$value){
+					echo "['".$key."',".$value."],";
+				}
+			?>
+			
         ]);
 
         var options = {
@@ -241,9 +393,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table = $('#info').DataTable();
+			
+				resetFilters();
+			
+				table.column(11).search(value);
+				table.draw();
 				
-				value = prepareParam(value);
-				drawTable('report_status' ,value);
+				resetFilters();
 			}
 	
 		}
@@ -264,19 +421,16 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 
       function drawChart() {
 		  
-		<?php 
-		
-			$rq_review = $req_steps[0];
-			$rq_approval = $req_steps[1];
-			$rq_inspection = $req_steps[2];
-		
-		?>
 	  
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Percent'],
-          ['Review Step', <?php echo $rq_review;?>],
-          ['Approval Step', <?php echo $rq_approval;?>],
-          ['Inspection Step', <?php echo $rq_inspection;?>]
+			
+		  <?php
+			foreach($reqst_cats as $key=>$value){
+				echo "['".$key."',".$value."],";
+			}
+		  ?>
+		  
         ]);
 
         var options = {
@@ -291,9 +445,14 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
 			
 			if (selectedItem) {
 				var value = data.getValue(selectedItem.row, 0);
+				var table = $('#info').DataTable();
 				
-				value = prepareParam(value);
-				drawTable('request_step' ,value);
+				resetFilters();
+				
+				table.column(12).search(value);
+				table.draw();
+				
+				resetFilters();
 			}
 	
 		}
@@ -306,87 +465,148 @@ Clicking on any slice of the PI chart will show the details of that slice in a T
       }
     </script>
 
-	<script>
 	
-	function drawTable(object, category){
-		//alert("Drawing the table for "+object);
-		var query_params = object + '/' + category;
-		
-		var xmlhttp = new XMLHttpRequest();
-		xmlhttp.onreadystatechange = function() {
-		
-		if (this.readyState == 4 && this.status == 200) {
-			//var myObj = JSON.parse(this.responseText);
-			document.getElementById("slice_table").innerHTML = this.responseText;
-			}
-		};
-		xmlhttp.open("POST", "db_pichart.php", true);
-		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlhttp.send(query_params); 
-	}
-	
-	// Convert slice names into database names 
-	function prepareParam(param){
-		
-		param = param.toLowerCase();
-		
-		if(param.includes(" ")){
-			param = param.replace(/\s/g, "_");
-		}
-						
-		return param;	
-	}
-	
-	</script>
-	
-
   </head>
   
   <body>
     
-	<table class="pies">
+	<table class="pies" width="100%">
 	
 	<tr>
-		<td><div id="piechart1"></div></td>
-		<td><div id="piechart2"></div></td>
+		<td width="50%" id="piechart1"></td>
+		<td width="50%" id="piechart2"></td>
 	</tr>
 	
 	<tr>
-		<td><div id="piechart3"></div></td>
-		<td><div id="piechart4"></div></td>
+		<td width="50%" id="piechart3"></td>
+		<td width="50%" id="piechart4"></td>
 	</tr>
 	
 	</table>
 
-	<div id="slice_table"></div>
-	<p id="test"> <?php
-	/*
-		echo $cmp_stats[0];
-		echo $cmp_stats[1];
-		echo $cmp_stats[2];
-		echo $cmp_stats[3];
-		echo $cmp_stats[4];
+	<div id="slice_table">
 	
+	  <table id="info" cellpadding="0" cellspacing="0" border="0"
+            class="datatable table table-striped table-bordered datatable-style table-hover"
+            width="100%" style="width: 100px;">
+              <thead>
+                <tr id="table-first-row">
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </thead>
+
+              <tbody>
+			  
+              </tbody>
+			  
+			   <tfoot>
+                <tr>
+                        <th>App Id</th>
+                        <th>App Name</th>
+                        <th>App Version</th>
+                        <th>Cmp Id</th>
+                        <th>Cmp Name</th>
+                        <th>Cmp Version</th>
+                        <th>Cmp Type</th>
+                        <th>App Status</th>
+                        <th>Cmp Status</th>
+						<th>Request Id</th>
+                        <th>Request Date</th>
+                        <th>Request Status</th>
+                        <th>Request Step</th>
+                        <th>Notes</th>
+                </tr>
+              </tfoot>
+        </table>
 	
-					echo "<pre>";
-					echo $released."<br />";
-					echo $in_prog."<br />";
-					echo $cancelled."<br />";
-					//print_r($app_stats); echo "<br />"; 
-					//print_r($cmp_stats); echo "<br />";
-					//print_r($req_stats); echo "<br />";
-					//print_r($req_steps); 
-					echo "</pre>";
-					
-	*/
-				  ?>
-	</p>
+	</div>
+
 	
   </body>
-</html>
+
+ 
 
 
-	  
-	  
+ <script type="text/javascript" language="javascript">
+    $(document).ready( function () {
+        
+        $('#info').DataTable( {
+            dom: 'lfrtBip',
+            buttons: [
+                'copy', 'excel', 'csv', 'pdf'
+            ],
+			ajax: { 
+				url: 'db_chart.php',
+				dataSrc: ''
+			}
+			}
+        );
+
+        $('#info thead tr').clone(true).appendTo( '#info thead' );
+        $('#info thead tr:eq(1) th').each( function (i) {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( table.column(i).search() !== this.value ) {
+                    table
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
+    
+        var table = $('#info').DataTable( {
+            orderCellsTop: true,
+            fixedHeader: true,
+            retrieve: true
+        } );
+        
+    } );
+
+</script>
+
+
+
+<script>
+
+	function resetFilters() {
+		
+		var table = $('#info').DataTable();
+		
+		for (i = 0; i < 15; i++) {
+			table.column(i).search("");	
+		}
+	}
+
+</script>
+
+ 
+
+ <style>
+   tfoot {
+     display: table-header-group;
+   }
+ </style>
+ 
+  
+ </html>
+
 	</div>
 </div>
+
+  <?php include("./footer.php"); ?>
